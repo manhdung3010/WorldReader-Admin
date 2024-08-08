@@ -7,11 +7,12 @@ import { SvgIconProps } from '@mui/material'
 interface UserIconProps {
   iconProps?: SvgIconProps
   icon: string | ReactNode
+  subMenu?: boolean
 }
 
 const UserIcon = (props: UserIconProps) => {
   // ** Props
-  const { icon, iconProps } = props
+  const { icon, subMenu, iconProps } = props
 
   const IconTag = icon
 
@@ -23,7 +24,7 @@ const UserIcon = (props: UserIconProps) => {
   } */
 
   // @ts-ignore
-  return <IconTag {...iconProps} style={{ ...styles }} />
+  return <IconTag {...iconProps} style={{ ...styles, fontSize: subMenu && '14px' }} />
 }
 
 export default UserIcon

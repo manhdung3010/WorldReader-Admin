@@ -39,37 +39,43 @@ const DefaultPalette = (mode: PaletteMode, themeColor: ThemeColor) => {
       light: '#9E69FD',
       main: '#9155FD',
       dark: '#804BDF',
-      contrastText: '#FFF'
+      contrastText: '#FFF',
+      tonal: '#EDE4FF'
     },
     secondary: {
       light: '#9C9FA4',
       main: '#8A8D93',
       dark: '#777B82',
-      contrastText: '#FFF'
+      contrastText: '#FFF',
+      tonal: '#A0A4AC'
     },
     success: {
       light: '#6AD01F',
       main: '#56CA00',
       dark: '#4CB200',
-      contrastText: '#FFF'
+      contrastText: '#FFF',
+      tonal: '#E4F6D6'
     },
     error: {
       light: '#FF6166',
       main: '#FF4C51',
       dark: '#E04347',
-      contrastText: '#FFF'
+      contrastText: '#FFF',
+      tonal: '#FFE2E3'
     },
     warning: {
       light: '#FFCA64',
       main: '#FFB400',
       dark: '#E09E00',
-      contrastText: '#FFF'
+      contrastText: '#FFF',
+      tonal: '#FFE2E3'
     },
     info: {
       light: '#32BAFF',
       main: '#16B1FF',
       dark: '#139CE0',
-      contrastText: '#FFF'
+      contrastText: '#FFF',
+      tonal: '#DAF2FF'
     },
     grey: {
       50: '#FAFAFA',

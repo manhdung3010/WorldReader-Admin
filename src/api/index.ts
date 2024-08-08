@@ -7,6 +7,7 @@ const axiosClient = axios.create({
 axiosClient.interceptors.request.use(
   config => {
     const accessToken = localStorage.getItem('accessToken')
+
     if (accessToken) {
       config.headers['Authorization'] = `Bearer ${accessToken}`
     }
@@ -22,8 +23,15 @@ axiosClient.interceptors.request.use(
 axiosClient.interceptors.response.use(
   response => response?.data,
   error => {
-    // Handle response errors
-    console.error('API request error:', error.response?.data || error.message)
+    if (error.response.status === 400) {
+      const responseData = error.response.data;
+      if (responseData && responseData.message && responseData.message.includes('Token not found')) {
+
+        window.location.replace('/pages/login',);
+
+        return;
+      }
+    }
 
     return Promise.reject(error.response?.data)
   }

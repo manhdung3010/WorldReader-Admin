@@ -32,7 +32,6 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 import { Controller, useForm } from 'react-hook-form'
 
-import * as Yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import toast from 'react-hot-toast'
 import { login } from 'src/api/auth.service'
@@ -40,6 +39,8 @@ import { useMutation } from '@tanstack/react-query'
 
 import { useRouter } from 'next/router'
 import { CircularProgress } from '@mui/material'
+
+import * as Yup from 'yup'
 
 interface State {
   password: string
@@ -86,8 +87,7 @@ const LoginPage = () => {
     mutationFn: (data: LoginData) => login(data),
     onSuccess: (response: any) => {
       localStorage.setItem('user', JSON.stringify(response.data))
-      localStorage.setItem('accessToken', JSON.stringify(response.data.accessToken))
-      console.log(response)
+      localStorage.setItem('accessToken', response.data.accessToken)
 
       toast.success('Logged in successfully!')
       router.push('/dashboard')
@@ -104,6 +104,8 @@ const LoginPage = () => {
   const handleMouseDownPassword = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
   }
+
+
 
   const onSubmit = async (data: any) => {
     try {

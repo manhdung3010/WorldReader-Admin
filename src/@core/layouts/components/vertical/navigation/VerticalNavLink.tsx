@@ -1,5 +1,5 @@
 // ** React Imports
-import { ElementType, ReactNode, useState } from 'react'
+import { ElementType, ReactNode, useEffect, useState } from 'react'
 
 // ** Next Imports
 import Link from 'next/link'
@@ -18,7 +18,7 @@ import ListItemButton, { ListItemButtonProps } from '@mui/material/ListItemButto
 import themeConfig from 'src/configs/themeConfig'
 
 // ** Types
-import { NavLink, } from 'src/@core/layouts/types'
+import { NavLink } from 'src/@core/layouts/types'
 import { Settings } from 'src/@core/context/settingsContext'
 
 // ** Custom Components Imports
@@ -26,7 +26,7 @@ import UserIcon from 'src/layouts/components/UserIcon'
 
 // ** Utils
 import { handleURLQueries } from 'src/@core/layouts/utils'
-import {  ChevronDown, ChevronRight } from 'mdi-material-ui'
+import { ChevronDown, ChevronRight, CircleOutline } from 'mdi-material-ui'
 import { Collapse } from '@mui/material'
 
 interface Props {
@@ -52,6 +52,9 @@ const MenuNavLink = styled(ListItemButton)<
   },
   '&.active .MuiTypography-root, &.active .MuiSvgIcon-root': {
     color: `${theme.palette.common.white} !important`
+  },
+  '&.hover, &.hover:hover': {
+    backgroundColor: theme.palette.action.hover
   }
 }))
 
@@ -64,8 +67,6 @@ const MenuItemTextMetaWrapper = styled(Box)<BoxProps>({
   ...(themeConfig.menuTextTruncate && { overflow: 'hidden' })
 })
 
-
-
 const VerticalNavLink = ({ item, navVisible, toggleNavVisibility }: Props) => {
   // ** Hooks
   const router = useRouter()
@@ -73,21 +74,34 @@ const VerticalNavLink = ({ item, navVisible, toggleNavVisibility }: Props) => {
 
   const IconTag: ReactNode = item.icon
 
-  const isNavLinkActive = () => {
-    if (router.pathname === item.path || handleURLQueries(router, item.path)) {
+  const isNavLinkActive = (path: any) => {
+    if (router.pathname === path || handleURLQueries(router, path)) {
       return true
     } else {
       return false
     }
   }
 
+  const isNavLinkChildActive = (item: any): boolean => {
+    if (item.children) {
+      return item.children.some((child: any) => isNavLinkActive(child.path))
+    }
+
+    return false
+  }
+
   const handleToggle = () => {
     setOpen(!open)
   }
 
+  useEffect(() => {
+    if (isNavLinkChildActive(item)) {
+      setOpen(true)
+    }
+  }, [item])
 
   return (
-  <>
+    <>
       <ListItem
         disablePadding
         className='nav-link'
@@ -97,7 +111,9 @@ const VerticalNavLink = ({ item, navVisible, toggleNavVisibility }: Props) => {
         <Link passHref href={item.path === undefined ? '/' : `${item.path}`}>
           <MenuNavLink
             component={'a'}
-            className={isNavLinkActive() ? 'active' : ''}
+            className={`${isNavLinkActive(item?.path) ? 'active' : ''} ${
+              isNavLinkChildActive(item) || open ? 'hover' : ''
+            }`}
             {...(item.openInNewTab ? { target: '_blank' } : null)}
             onClick={e => {
               if (item.path === undefined) {
@@ -106,8 +122,7 @@ const VerticalNavLink = ({ item, navVisible, toggleNavVisibility }: Props) => {
               }
               if (item.children) {
                 handleToggle()
-              }
-              if (navVisible) {
+              } else if (navVisible) {
                 toggleNavVisibility()
               }
             }}
@@ -125,7 +140,7 @@ const VerticalNavLink = ({ item, navVisible, toggleNavVisibility }: Props) => {
             >
               <UserIcon icon={IconTag} />
             </ListItemIcon>
-  
+
             <MenuItemTextMetaWrapper>
               <Typography {...(themeConfig.menuTextTruncate && { noWrap: true })}>{item.title}</Typography>
               {item.badgeContent ? (
@@ -140,23 +155,79 @@ const VerticalNavLink = ({ item, navVisible, toggleNavVisibility }: Props) => {
                   }}
                 />
               ) : null}
-                {item.children && (
-                open ? <ChevronDown/>: <ChevronRight /> 
-              )}
+              {item.children && (open ? <ChevronDown /> : <ChevronRight />)}
             </MenuItemTextMetaWrapper>
           </MenuNavLink>
         </Link>
       </ListItem>
       {item.children && (
         <Collapse in={open} timeout='auto' unmountOnExit>
-          <Box sx={{ pl: 4 }}>
+          <Box>
             {item.children.map((child, index) => (
-            <div key={index}>{child.title}</div>
+              <ListItem
+                key={index}
+                disablePadding
+                className='nav-link'
+                disabled={child.disabled || false}
+                sx={{ mt: 1.5, px: '0 !important' }}
+              >
+                <Link passHref href={child.path === undefined ? '/' : `${child.path}`}>
+                  <MenuNavLink
+                    component={'a'}
+                    className={isNavLinkActive(child.path) ? 'active' : ''}
+                    {...(child.openInNewTab ? { target: '_blank' } : null)}
+                    onClick={e => {
+                      if (child.path === undefined) {
+                        e.preventDefault()
+                        e.stopPropagation()
+                      }
+                      if (child.children) {
+                        handleToggle()
+                      }
+                      if (navVisible) {
+                        toggleNavVisibility()
+                      }
+                    }}
+                    sx={{
+                      pl: 5.5,
+                      ...(child.disabled ? { pointerEvents: 'none' } : { cursor: 'pointer' })
+                    }}
+                  >
+                    <ListItemIcon
+                      sx={{
+                        mr: 2.5,
+                        padding: '4px',
+                        color: 'text.primary',
+                        transition: 'margin .25s ease-in-out'
+                      }}
+                    >
+                      {child.icon ? <UserIcon icon={child.icon} /> : <UserIcon icon={CircleOutline} subMenu={true} />}
+                    </ListItemIcon>
+
+                    <MenuItemTextMetaWrapper>
+                      <Typography {...(themeConfig.menuTextTruncate && { noWrap: true })}>{child.title}</Typography>
+                      {child.badgeContent ? (
+                        <Chip
+                          label={child.badgeContent}
+                          color={child.badgeColor || 'primary'}
+                          sx={{
+                            height: 20,
+                            fontWeight: 500,
+                            marginLeft: 1.25,
+                            '& .MuiChip-label': { px: 1.5, textTransform: 'capitalize' }
+                          }}
+                        />
+                      ) : null}
+                      {child.children && (open ? <ChevronDown /> : <ChevronRight />)}
+                    </MenuItemTextMetaWrapper>
+                  </MenuNavLink>
+                </Link>
+              </ListItem>
             ))}
           </Box>
         </Collapse>
       )}
-  </>
+    </>
   )
 }
 
