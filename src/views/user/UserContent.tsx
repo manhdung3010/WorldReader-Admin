@@ -50,6 +50,7 @@ const UserContent = () => {
         id: user.id,
         username: user.username,
         fullName: user.fullName,
+        avatar: user.avatar,
         email: user.email,
         date: user.date,
         status: user.status as UserStatus,

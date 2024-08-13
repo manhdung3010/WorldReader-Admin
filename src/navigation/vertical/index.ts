@@ -32,8 +32,8 @@ const navigation = (): VerticalNavItemsType => {
       icon: AccountOutline,
       children: [
         {
-          title: 'Customers',
-          path: '/user/customers'
+          title: 'List',
+          path: '/user/list'
         }
       ]
     },

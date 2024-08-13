@@ -19,7 +19,16 @@ import TableLoading from 'src/components/TableLoading'
 import { UserType } from 'src/enums/row'
 import { UserTableProps } from 'src/enums/table'
 import TableError from 'src/components/TableError'
-import { Account, AccountStar, Delete, GenderFemale, GenderMale, GenderNonBinary, Pencil } from 'mdi-material-ui'
+import {
+  Account,
+  AccountEye,
+  AccountStar,
+  Delete,
+  GenderFemale,
+  GenderMale,
+  GenderNonBinary,
+  Pencil
+} from 'mdi-material-ui'
 import {
   Avatar,
   Button,
@@ -37,6 +46,8 @@ import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { deleteUser } from 'src/api/user.service'
 import toast from 'react-hot-toast'
+import { useRouter } from 'next/router'
+import { stringAvatar } from 'src/utils/string-avatar'
 
 const StyledTableCell = styled(TableCell)<TableCellProps>(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -91,7 +102,7 @@ const roleIcon = {
 }
 
 const columns = [
-  { id: 'username', label: 'Name' },
+  { id: 'user', label: 'User' },
   { id: 'email', label: 'Email' },
   { id: 'date', label: 'Date' },
   { id: 'gender', label: 'Gender' },
@@ -106,6 +117,7 @@ const UserTable: React.FC<UserTableProps> = ({ rows, isLoading, isError }) => {
   const [detailData, setDetailData] = useState<any | undefined>(undefined)
 
   const queryClient = useQueryClient()
+  const router = useRouter()
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => deleteUser(id),
@@ -152,12 +164,20 @@ const UserTable: React.FC<UserTableProps> = ({ rows, isLoading, isError }) => {
                 rows.map((row: UserType) => (
                   <TableRow hover key={row.id} sx={{ '&:last-of-type td, &:last-of-type th': { border: 0 } }}>
                     <TableCell sx={{ py: theme => `${theme.spacing(0.5)} !important` }}>
-                      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                        <Typography sx={{ fontWeight: 500, fontSize: '0.875rem !important' }}>
-                          {row.username || '-'}
-                        </Typography>
-                        <Typography variant='caption'>{row.fullName || '-'}</Typography>
-                      </Box>
+                      <Stack direction='row' spacing={2}>
+                        {row?.avatar ? (
+                          <Avatar alt={row?.username} src={row?.avatar} />
+                        ) : (
+                          <Avatar {...stringAvatar(row?.fullName)} />
+                        )}
+
+                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                          <Typography sx={{ fontWeight: 500, fontSize: '0.875rem !important' }}>
+                            {row.username || '-'}
+                          </Typography>
+                          <Typography variant='caption'>{row.fullName || '-'}</Typography>
+                        </Box>
+                      </Stack>
                     </TableCell>
                     <TableCell>{row.email || '-'}</TableCell>
                     <TableCell>{row.date || '-'}</TableCell>
@@ -185,6 +205,16 @@ const UserTable: React.FC<UserTableProps> = ({ rows, isLoading, isError }) => {
                           }}
                         >
                           <Pencil />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title='View'>
+                        <IconButton
+                          aria-label='View'
+                          onClick={() => {
+                            router.push(`/user/detail/${row.id}`)
+                          }}
+                        >
+                          <AccountEye />
                         </IconButton>
                       </Tooltip>
                       <Tooltip title='Remove'>

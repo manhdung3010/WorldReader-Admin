@@ -27,12 +27,10 @@ export function updateUser(id: number, payload: any) {
   return axiosClient.put(`admin/users/${id}`, payload)
 }
 
-export function getDetailUser(id: number) {
+export function getDetailUser(id: any) {
   return axiosClient.get(`admin/users/${id}`)
 }
-
 
 export function deleteUser(id: number) {
   return axiosClient.delete(`admin/users/${id}`)
 }
-

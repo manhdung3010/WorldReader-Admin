@@ -25,6 +25,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { createUser, getDetailUser, updateUser } from 'src/api/user.service'
 import toast from 'react-hot-toast'
 import { useEffect, useState } from 'react'
+import CustomUploadSinge from 'src/components/CustomUploadSingle'
 
 const DrawerUserForm: React.FC<any> = ({ openDrawerForm, setOpenDrawerForm, mode, detailData }) => {
   const validationSchema = Yup.object().shape({
@@ -37,7 +38,8 @@ const DrawerUserForm: React.FC<any> = ({ openDrawerForm, setOpenDrawerForm, mode
     address: Yup.string().notRequired(),
     date: Yup.string().notRequired(),
     gender: Yup.string().notRequired(),
-    status: Yup.string().notRequired()
+    status: Yup.string().notRequired(),
+    avatar: Yup.string().notRequired()
   })
 
   const [isLoading, setIsLoading] = useState(false)
@@ -45,6 +47,7 @@ const DrawerUserForm: React.FC<any> = ({ openDrawerForm, setOpenDrawerForm, mode
 
   const {
     handleSubmit,
+    setValue,
     control,
     reset,
     formState: { errors }
@@ -120,8 +123,19 @@ const DrawerUserForm: React.FC<any> = ({ openDrawerForm, setOpenDrawerForm, mode
           onSubmit={handleSubmit(onSubmit)}
         >
           <Typography variant='body1' py={1}>
+            Avatar
+          </Typography>
+
+          <CustomUploadSinge
+            onChange={value => {
+              setValue('avatar', value)
+            }}
+          />
+
+          <Typography variant='body1' py={1}>
             Basic Information
           </Typography>
+
           <Controller
             name='username'
             control={control}
@@ -131,7 +145,7 @@ const DrawerUserForm: React.FC<any> = ({ openDrawerForm, setOpenDrawerForm, mode
                 autoFocus
                 {...field}
                 fullWidth
-                label='UserName'
+                label='User Name'
                 error={!!errors.username}
                 helperText={errors.username?.message}
               />
@@ -223,7 +237,7 @@ const DrawerUserForm: React.FC<any> = ({ openDrawerForm, setOpenDrawerForm, mode
           <Controller
             name='gender'
             control={control}
-            defaultValue=''
+            defaultValue='other'
             render={({ field }) => (
               <FormControl fullWidth>
                 <InputLabel id='gender-select-label'>Gender</InputLabel>

@@ -5,7 +5,7 @@ import Grid from '@mui/material/Grid'
 import UserContent from 'src/views/user/UserContent'
 import UserHeadings from 'src/views/user/UserHeadings'
 
-const CustomerPage = () => {
+const ListUserPage = () => {
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
@@ -18,4 +18,4 @@ const CustomerPage = () => {
   )
 }
 
-export default CustomerPage
+export default ListUserPage

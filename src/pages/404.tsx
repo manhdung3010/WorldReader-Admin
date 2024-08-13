@@ -2,7 +2,6 @@
 import { ReactNode } from 'react'
 
 // ** Next Import
-import Link from 'next/link'
 
 // ** MUI Components
 import Button from '@mui/material/Button'
@@ -15,6 +14,7 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 
 // ** Demo Imports
 import FooterIllustrations from 'src/views/pages/misc/FooterIllustrations'
+import { useRouter } from 'next/router'
 
 // ** Styled Components
 const BoxWrapper = styled(Box)<BoxProps>(({ theme }) => ({
@@ -47,6 +47,8 @@ const TreeIllustration = styled('img')(({ theme }) => ({
 }))
 
 const Error404 = () => {
+  const router = useRouter()
+
   return (
     <Box className='content-center'>
       <Box sx={{ p: 5, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
@@ -58,11 +60,10 @@ const Error404 = () => {
           <Typography variant='body2'>We couldn&prime;t find the page you are looking for.</Typography>
         </BoxWrapper>
         <Img height='487' alt='error-illustration' src='/images/pages/404.png' />
-        <Link passHref href='/'>
-          <Button component='a' variant='contained' sx={{ px: 5.5 }}>
-            Back to Home
-          </Button>
-        </Link>
+
+        <Button onClick={() => router.back()} variant='contained' sx={{ px: 5.5 }}>
+          Go Back
+        </Button>
       </Box>
       <FooterIllustrations image={<TreeIllustration alt='tree' src='/images/pages/tree.png' />} />
     </Box>

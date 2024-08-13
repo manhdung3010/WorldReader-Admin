@@ -4,6 +4,7 @@ export interface UserType {
   id: number
   username: string
   fullName: string
+  avatar: string
   email: string
   date: Date
   status: UserStatus

@@ -1,5 +1,5 @@
 import { Box, Button, Stack, TextField } from '@mui/material'
-import { ExportVariant, Plus } from 'mdi-material-ui'
+import { Plus } from 'mdi-material-ui'
 import { UserFiltersProps } from './UserTypes'
 import { useState } from 'react'
 
@@ -22,8 +22,6 @@ const UserAction: React.FC<UserFiltersProps> = ({ setFormFilter }) => {
 
   const handleTextFieldChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target
-    console.log(name)
-
     setFormSearch(prev => ({ ...prev, [name]: value }))
     debouncedSetFormFilter(value, name, setFormFilter)
   }
@@ -33,9 +31,9 @@ const UserAction: React.FC<UserFiltersProps> = ({ setFormFilter }) => {
       <Box p={3}>
         <Stack direction='row' alignContent={'center'} justifyContent={'space-between'}>
           <Box>
-            <Button variant='outlined' color='secondary' startIcon={<ExportVariant />}>
+            {/* <Button variant='outlined' color='secondary' startIcon={<ExportVariant />}>
               Export
-            </Button>
+            </Button> */}
           </Box>
 
           <Stack direction='row' spacing={3} alignItems={'center'}>
