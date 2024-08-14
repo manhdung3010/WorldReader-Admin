@@ -27,8 +27,6 @@ const CustomUploadMultiple = () => {
       'image/*': ['.png', '.jpg', '.jpeg', '.gif']
     },
     onDrop: (acceptedFiles: File[]) => {
-      console.log(acceptedFiles)
-
       setFiles(acceptedFiles.map((file: File) => Object.assign(file)))
     }
   })

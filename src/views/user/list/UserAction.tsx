@@ -1,10 +1,10 @@
 import { Box, Button, Stack, TextField } from '@mui/material'
 import { Plus } from 'mdi-material-ui'
-import { UserFiltersProps } from './UserTypes'
 import { useState } from 'react'
 
 import _ from 'lodash'
 import DrawerUserForm from './DrawerUserForm'
+import { UserFiltersProps } from '../UserTypes'
 
 const UserAction: React.FC<UserFiltersProps> = ({ setFormFilter }) => {
   const [openDrawerForm, setOpenDrawerForm] = useState(false)

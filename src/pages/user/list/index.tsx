@@ -1,9 +1,9 @@
 // ** MUI Imports
 import Grid from '@mui/material/Grid'
+import UserContent from 'src/views/user/list/UserContent'
+import UserHeadings from 'src/views/user/list/UserHeadings'
 
 // ** Demo Components Imports
-import UserContent from 'src/views/user/UserContent'
-import UserHeadings from 'src/views/user/UserHeadings'
 
 const ListUserPage = () => {
   return (

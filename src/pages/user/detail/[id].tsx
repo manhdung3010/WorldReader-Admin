@@ -6,9 +6,10 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { getDetailUser } from 'src/api/user.service'
 import { formatCreateAtDate } from 'src/utils/time'
+import UserCard from 'src/views/user/detail/UserCard'
+import UserContent from 'src/views/user/detail/UserContent'
 
 // ** Demo Components Imports
-import UserContent from 'src/views/user/UserContent'
 
 const DetailUserPage = () => {
   const [userData, setUserData] = useState<any>()
@@ -24,8 +25,6 @@ const DetailUserPage = () => {
     }
   }, [userData, detailUser])
 
-  console.log(userData)
-
   return (
     <Box>
       <Stack direction='row'>
@@ -35,7 +34,10 @@ const DetailUserPage = () => {
         </Box>
       </Stack>
       <Grid container spacing={6}>
-        <Grid item xs={12}>
+        <Grid item xs={4}>
+          <UserCard userData={userData} />
+        </Grid>
+        <Grid item xs={8}>
           <UserContent />
         </Grid>
       </Grid>

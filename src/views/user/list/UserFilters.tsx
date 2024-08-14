@@ -14,7 +14,7 @@ import {
 import { useState } from 'react'
 import { UserStatus } from 'src/enums'
 import _ from 'lodash'
-import { UserFiltersProps } from './UserTypes'
+import { UserFiltersProps } from '../UserTypes'
 
 const UserFilters: React.FC<UserFiltersProps> = ({ formFilter, setFormFilter }) => {
   const [formSearch, setFormSearch] = useState({
