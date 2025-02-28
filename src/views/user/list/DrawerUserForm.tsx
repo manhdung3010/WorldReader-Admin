@@ -25,7 +25,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { createUser, getDetailUser, updateUser } from 'src/api/user.service'
 import toast from 'react-hot-toast'
 import { useEffect, useState } from 'react'
-import CustomUploadSinge from 'src/components/CustomUploadSingle'
+import CustomUploadSingle from 'src/components/CustomUploadSingle'
 
 const DrawerUserForm: React.FC<any> = ({ openDrawerForm, setOpenDrawerForm, mode, detailData }) => {
   const validationSchema = Yup.object().shape({
@@ -48,6 +48,7 @@ const DrawerUserForm: React.FC<any> = ({ openDrawerForm, setOpenDrawerForm, mode
   const {
     handleSubmit,
     setValue,
+    getValues,
     control,
     reset,
     formState: { errors }
@@ -55,9 +56,13 @@ const DrawerUserForm: React.FC<any> = ({ openDrawerForm, setOpenDrawerForm, mode
     resolver: yupResolver(validationSchema)
   })
 
-  const { data: detailUser } = useQuery(['DETAIL_USER', detailData?.id], () => getDetailUser(detailData?.id), {
-    enabled: !!detailData?.id
-  })
+  const { data: detailUser } = useQuery(
+    ['DETAIL_USER', detailData?.id, detailData],
+    () => getDetailUser(detailData?.id),
+    {
+      enabled: !!detailData?.id
+    }
+  )
 
   const handleCloseDrawer = () => {
     setOpenDrawerForm(false)
@@ -95,7 +100,7 @@ const DrawerUserForm: React.FC<any> = ({ openDrawerForm, setOpenDrawerForm, mode
 
   return (
     <Drawer anchor='right' open={openDrawerForm} onClose={handleCloseDrawer}>
-      <Box sx={{ width: 350, height: '100%', display: 'flex', flexDirection: 'column' }} role='presentation'>
+      <Box sx={{ width: 500, height: '100%', display: 'flex', flexDirection: 'column' }} role='presentation'>
         <Stack
           direction='row'
           justifyContent='space-between'
@@ -126,7 +131,8 @@ const DrawerUserForm: React.FC<any> = ({ openDrawerForm, setOpenDrawerForm, mode
             Avatar
           </Typography>
 
-          <CustomUploadSinge
+          <CustomUploadSingle
+            value={getValues('avatar')}
             onChange={value => {
               setValue('avatar', value)
             }}

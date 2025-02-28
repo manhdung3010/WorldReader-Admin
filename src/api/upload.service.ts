@@ -9,6 +9,18 @@ export function uploadFile(file: any) {
   })
 }
 
+export function uploadFiles(files: any) {
+  const formData = new FormData()
+
+  files.forEach((file: any) => {
+    formData.append('files', file)
+  })
+
+  return axiosClient.post('files/uploads', formData, {
+    headers: { 'content-type': 'multipart/form-data' }
+  })
+}
+
 export function deleteFile(fileName: any) {
-  return axiosClient.delete(`files/uploads/${fileName}`)
+  return axiosClient.delete(`files/${fileName}`)
 }

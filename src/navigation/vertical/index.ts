@@ -9,7 +9,7 @@ import GoogleCirclesExtended from 'mdi-material-ui/GoogleCirclesExtended'
 
 // ** Type import
 import { VerticalNavItemsType } from 'src/@core/layouts/types'
-import { AccountOutline } from 'mdi-material-ui'
+import { AccountEditOutline, AccountOutline, Cart, PackageVariantClosed, PostOutline, Sale } from 'mdi-material-ui'
 
 const navigation = (): VerticalNavItemsType => {
   return [
@@ -18,14 +18,13 @@ const navigation = (): VerticalNavItemsType => {
       icon: HomeOutline,
       path: '/dashboard'
     },
-
     {
       title: 'Account Settings',
       icon: AccountCogOutline,
       path: '/account-settings'
     },
     {
-      sectionTitle: 'Pages'
+      sectionTitle: 'User'
     },
     {
       title: 'User',
@@ -34,6 +33,90 @@ const navigation = (): VerticalNavItemsType => {
         {
           title: 'List',
           path: '/user/list'
+        }
+      ]
+    },
+    {
+      title: 'Author',
+      icon: AccountEditOutline,
+      children: [
+        {
+          title: 'List',
+          path: '/author/list'
+        }
+      ]
+    },
+    {
+      sectionTitle: 'Product'
+    },
+    {
+      title: 'Product',
+      icon: PackageVariantClosed,
+      children: [
+        {
+          title: 'List',
+          path: '/product/list'
+        },
+        {
+          title: 'Add',
+          path: '/product/add'
+        },
+        {
+          title: 'Category',
+          path: '/product/category'
+        },
+        {
+          title: 'Keyword',
+          path: '/product/keyword'
+        }
+      ]
+    },
+    {
+      title: 'Discount',
+      icon: Sale,
+      children: [
+        {
+          title: 'List',
+          path: '/discount/list'
+        },
+        {
+          title: 'Add',
+          path: '/discount/add'
+        }
+      ]
+    },
+    {
+      title: 'Order',
+      icon: Cart,
+      children: [
+        {
+          title: 'List',
+          path: '/order/list'
+        }
+      ]
+    },
+    {
+      sectionTitle: 'Community'
+    },
+    {
+      title: 'Post',
+      icon: PostOutline,
+      children: [
+        {
+          title: 'List',
+          path: '/post/list'
+        },
+        {
+          title: 'Add',
+          path: '/post/add'
+        },
+        {
+          title: 'Category',
+          path: '/post/category'
+        },
+        {
+          title: 'Keyword',
+          path: '/post/keyword'
         }
       ]
     },

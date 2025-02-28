@@ -1,14 +1,8 @@
-import { Gender, Role, UserStatus } from '.'
-
 export interface UserType {
   id: number
-  username: string
-  fullName: string
-  avatar: string
-  email: string
+  name: string
+  nationality: string
+  biography: string
+  image: string
   date: Date
-  status: UserStatus
-  gender: Gender
-  role: Role
-  createAt: Date
 }

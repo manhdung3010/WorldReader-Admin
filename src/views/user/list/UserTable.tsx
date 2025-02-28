@@ -16,7 +16,6 @@ import { styled } from '@mui/material/styles'
 import { ThemeColor } from 'src/@core/layouts/types'
 import TableNoData from 'src/components/TableNoData'
 import TableLoading from 'src/components/TableLoading'
-import { UserType } from 'src/enums/row'
 import { UserTableProps } from 'src/enums/table'
 import TableError from 'src/components/TableError'
 import {
@@ -69,7 +68,7 @@ const activeObj: colorObj = {
   inactive: { color: 'error' }
 }
 
-const genderIcon = {
+const genderIcon: any = {
   male: (
     <Avatar variant='circular' sx={{ boxShadow: 3, marginRight: 4, backgroundColor: `info.tonal` }}>
       <GenderMale color='info' />
@@ -87,7 +86,7 @@ const genderIcon = {
   )
 }
 
-const roleIcon = {
+const roleIcon: any = {
   admin: (
     <Avatar variant='circular' sx={{ boxShadow: 3, marginRight: 4, backgroundColor: `error.tonal` }}>
       <AccountStar color='error' />
@@ -145,99 +144,97 @@ const UserTable: React.FC<UserTableProps> = ({ rows, isLoading, isError }) => {
 
   return (
     <>
-      <Card>
-        <TableContainer>
-          <Table sx={{ minWidth: 800 }} aria-label='table in dashboard'>
-            <TableHead>
-              <TableRow>
-                {columns.map(column => (
-                  <StyledTableCell key={column.id}> {column.label}</StyledTableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {isError ? (
-                <TableError />
-              ) : isLoading ? (
-                <TableLoading length={columns.length} />
-              ) : rows.length > 0 ? (
-                rows.map((row: UserType) => (
-                  <TableRow hover key={row.id} sx={{ '&:last-of-type td, &:last-of-type th': { border: 0 } }}>
-                    <TableCell sx={{ py: theme => `${theme.spacing(0.5)} !important` }}>
-                      <Stack direction='row' spacing={2}>
-                        {row?.avatar ? (
-                          <Avatar alt={row?.username} src={row?.avatar} />
-                        ) : (
-                          <Avatar {...stringAvatar(row?.fullName)} />
-                        )}
+      <TableContainer>
+        <Table sx={{ minWidth: 800 }} aria-label='table in dashboard'>
+          <TableHead>
+            <TableRow>
+              {columns.map(column => (
+                <StyledTableCell key={column.id}> {column.label}</StyledTableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {isError ? (
+              <TableError />
+            ) : isLoading ? (
+              <TableLoading length={columns.length} />
+            ) : rows.length > 0 ? (
+              rows.map((row: any) => (
+                <TableRow hover key={row.id} sx={{ '&:last-of-type td, &:last-of-type th': { border: 0 } }}>
+                  <TableCell sx={{ py: theme => `${theme.spacing(0.5)} !important` }}>
+                    <Stack direction='row' spacing={2}>
+                      {row?.avatar ? (
+                        <Avatar alt={row?.username} src={row?.avatar} />
+                      ) : (
+                        <Avatar {...stringAvatar(row?.fullName)} />
+                      )}
 
-                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                          <Typography sx={{ fontWeight: 500, fontSize: '0.875rem !important' }}>
-                            {row.username || '-'}
-                          </Typography>
-                          <Typography variant='caption'>{row.fullName || '-'}</Typography>
-                        </Box>
-                      </Stack>
-                    </TableCell>
-                    <TableCell>{row.email || '-'}</TableCell>
-                    <TableCell>{row.date || '-'}</TableCell>
-                    <TableCell>{row.gender ? genderIcon[row.gender] : '-'}</TableCell>
-                    <TableCell>{row.role ? roleIcon[row.role] : '-'}</TableCell>
-                    <TableCell>
-                      <Chip
-                        label={row.status}
-                        color={activeObj[row.status].color}
-                        sx={{
-                          height: 24,
-                          fontSize: '0.75rem',
-                          textTransform: 'capitalize',
-                          '& .MuiChip-label': { fontWeight: 500 }
+                      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                        <Typography sx={{ fontWeight: 500, fontSize: '0.875rem !important' }}>
+                          {row.username || '-'}
+                        </Typography>
+                        <Typography variant='caption'>{row.fullName || '-'}</Typography>
+                      </Box>
+                    </Stack>
+                  </TableCell>
+                  <TableCell>{row.email || '-'}</TableCell>
+                  <TableCell>{row.date || '-'}</TableCell>
+                  <TableCell>{row.gender ? genderIcon[row.gender] : '-'}</TableCell>
+                  <TableCell>{row.role ? roleIcon[row.role] : '-'}</TableCell>
+                  <TableCell>
+                    <Chip
+                      label={row.status}
+                      color={activeObj[row.status].color}
+                      sx={{
+                        height: 24,
+                        fontSize: '0.75rem',
+                        textTransform: 'capitalize',
+                        '& .MuiChip-label': { fontWeight: 500 }
+                      }}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Tooltip title='Edit'>
+                      <IconButton
+                        aria-label='View'
+                        onClick={() => {
+                          setOpenDrawerForm(true)
+                          setDetailData(row)
                         }}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Tooltip title='Edit'>
-                        <IconButton
-                          aria-label='View'
-                          onClick={() => {
-                            setOpenDrawerForm(true)
-                            setDetailData(row)
-                          }}
-                        >
-                          <Pencil />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title='View'>
-                        <IconButton
-                          aria-label='View'
-                          onClick={() => {
-                            router.push(`/user/detail/${row.id}`)
-                          }}
-                        >
-                          <AccountEye />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title='Remove'>
-                        <IconButton
-                          aria-label='Delete'
-                          onClick={() => {
-                            handleDeleteClick()
-                            setDetailData(row)
-                          }}
-                        >
-                          <Delete color='error' />
-                        </IconButton>
-                      </Tooltip>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableNoData />
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Card>
+                      >
+                        <Pencil />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title='View'>
+                      <IconButton
+                        aria-label='View'
+                        onClick={() => {
+                          router.push(`/user/detail/${row.id}`)
+                        }}
+                      >
+                        <AccountEye />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title='Remove'>
+                      <IconButton
+                        aria-label='Delete'
+                        onClick={() => {
+                          handleDeleteClick()
+                          setDetailData(row)
+                        }}
+                      >
+                        <Delete color='error' />
+                      </IconButton>
+                    </Tooltip>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableNoData />
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
       <Dialog open={openDialog}>
         <DialogTitle>Confirm Deletion</DialogTitle>

@@ -3,15 +3,17 @@ import Card from '@mui/material/Card'
 import UserTable from './UserTable'
 import UserFilters from './UserFilters'
 import UserAction from './UserAction'
-import { Divider } from '@mui/material'
+import { Box, Divider, Pagination } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { getUser } from 'src/api/user.service'
 import { Gender, Role, UserStatus } from 'src/enums'
 import { UserType } from 'src/enums/row'
+import CustomPagination from 'src/components/CustomPagination'
 
 const UserContent = () => {
   const [rows, setRows] = useState<UserType[]>([])
+  const [totalPages, setTotalPages] = useState(1)
 
   const [formFilter, setFormFilter] = useState({
     username: '',
@@ -27,7 +29,7 @@ const UserContent = () => {
     data: users,
     isLoading,
     isError
-  } = useQuery(
+  } = useQuery<any>(
     [
       'USERS',
       formFilter.username,
@@ -59,6 +61,7 @@ const UserContent = () => {
         createAt: user.createAt
       }))
       setRows(transformedRows)
+      setTotalPages(users.totalPages || Math.ceil(users.totalCount / formFilter.pageSize) || 1)
     }
   }, [users])
 
@@ -68,6 +71,7 @@ const UserContent = () => {
       <Divider />
       <UserAction formFilter={formFilter} setFormFilter={setFormFilter} />
       <UserTable rows={rows} isLoading={isLoading} isError={isError} />
+      <CustomPagination filter={formFilter} setFormFilter={setFormFilter} totalPages={totalPages} />
     </Card>
   )
 }

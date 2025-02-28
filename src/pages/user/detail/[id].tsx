@@ -38,7 +38,7 @@ const DetailUserPage = () => {
           <UserCard userData={userData} />
         </Grid>
         <Grid item xs={8}>
-          <UserContent />
+          <UserContent userData={userData} />
         </Grid>
       </Grid>
     </Box>

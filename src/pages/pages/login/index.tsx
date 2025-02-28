@@ -86,14 +86,23 @@ const LoginPage = () => {
   const loginMutation = useMutation({
     mutationFn: (data: LoginData) => login(data),
     onSuccess: (response: any) => {
-      localStorage.setItem('user', JSON.stringify(response.data))
+      console.log(response)
+
+      if (!response.data) {
+        toast.error(response.message || 'Login failed')
+
+        return
+      }
+
+      localStorage.setItem('user', JSON.stringify(response.data.user))
       localStorage.setItem('accessToken', response.data.accessToken)
 
       toast.success('Logged in successfully!')
       router.push('/dashboard')
     },
-    onError: (error: Error) => {
-      toast.error(error.message || 'Login failed')
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || error.message || 'Login failed'
+      toast.error(errorMessage)
     }
   })
 
@@ -104,8 +113,6 @@ const LoginPage = () => {
   const handleMouseDownPassword = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
   }
-
-
 
   const onSubmit = async (data: any) => {
     try {

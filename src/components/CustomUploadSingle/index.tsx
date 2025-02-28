@@ -1,5 +1,5 @@
 // React Imports
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // MUI Imports
 import Box from '@mui/material/Box'
@@ -10,15 +10,28 @@ import Typography from '@mui/material/Typography'
 import { useDropzone } from 'react-dropzone'
 import { Close, ExportVariant } from 'mdi-material-ui'
 import toast from 'react-hot-toast'
-import { deleteFile, uploadFile } from 'src/api/upload.service'
-import { useMutation } from '@tanstack/react-query'
+import { uploadFile } from 'src/api/upload.service'
 import { IconButton, Tooltip } from '@mui/material'
 
-const CustomUploadSingle = ({ onChange }: { onChange?: (value: any) => void }) => {
+const CustomUploadSingle = ({
+  value,
+  onChange,
+  style
+}: {
+  value: any
+  onChange?: (value: any) => void
+  style?: any
+}) => {
   // States
   const [file, setFile] = useState<any | null>(null)
 
   const fileUrl = process.env.NEXT_PUBLIC_FILE_URL
+
+  useEffect(() => {
+    if (value) {
+      setFile(value)
+    }
+  }, [value])
 
   // Hooks
   const { getRootProps, getInputProps } = useDropzone({
@@ -48,7 +61,7 @@ const CustomUploadSingle = ({ onChange }: { onChange?: (value: any) => void }) =
       toast.success('File uploaded successfully.')
 
       // Set the encoded file URL
-      setFile(uploadedFileUrl)
+      setFile(`${fileUrl}${encodeURIComponent(uploadedFileUrl?.file_name)}`)
 
       // Trigger the onChange callback with the full file URL
       if (onChange) {
@@ -60,27 +73,9 @@ const CustomUploadSingle = ({ onChange }: { onChange?: (value: any) => void }) =
     }
   }
 
-  const deleteFileMutation = useMutation((fileName: any) => deleteFile(fileName), {
-    onMutate: () => {
-      toast.loading('Deleting file...')
-    },
-    onSuccess: () => {
-      toast.dismiss()
-      toast.success('File deleted successfully.')
-    },
-    onError: () => {
-      toast.dismiss()
-      toast.error('Failed to delete file.')
-    },
-    onSettled: () => {
-      toast.dismiss()
-    }
-  })
-
-  const handleDeleteFile = (e: any, fileName: any) => {
+  const handleDeleteFile = (e: any) => {
     e.preventDefault()
     e.stopPropagation()
-    deleteFileMutation.mutate(fileName)
     if (onChange) {
       onChange('')
     }
@@ -92,8 +87,18 @@ const CustomUploadSingle = ({ onChange }: { onChange?: (value: any) => void }) =
       {...getRootProps({ className: 'dropzone' })}
       sx={{
         p: 2,
-        border: '2px dashed #ccc'
+        border: '2px dashed #ccc',
+        borderRadius: 1,
+        cursor: 'pointer',
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: 150,
+        bgcolor: 'background.default',
+        '&:hover': { borderColor: 'primary.main' }
       }}
+      style={style}
     >
       <input {...getInputProps()} />
       {file ? (
@@ -104,27 +109,28 @@ const CustomUploadSingle = ({ onChange }: { onChange?: (value: any) => void }) =
             justifyContent: 'center'
           }}
         >
-          <Tooltip title='Delete File'>
-            <IconButton
-              sx={{
-                position: 'absolute',
-                top: -10,
-                right: 20
-              }}
-              aria-label='View'
-              onClick={e => {
-                handleDeleteFile(e, file?.file_name)
-              }}
-            >
-              <Close />
-            </IconButton>
-          </Tooltip>
+          {file && (
+            <Tooltip title='Delete File'>
+              <IconButton
+                sx={{
+                  position: 'absolute',
+                  top: -10,
+                  right: -10,
+                  bgcolor: 'background.paper',
+                  '&:hover': { bgcolor: 'grey.100' }
+                }}
+                onClick={e => handleDeleteFile(e)}
+              >
+                <Close fontSize='small' />
+              </IconButton>
+            </Tooltip>
+          )}
           <img
-            alt={file?.fileName}
+            alt={file}
             style={{
               maxHeight: 150
             }}
-            src={`${fileUrl}${encodeURIComponent(file?.file_name)}`}
+            src={file}
           />
         </Box>
       ) : (
