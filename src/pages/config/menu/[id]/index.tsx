@@ -1,5 +1,5 @@
-import CategoryPostDetailContent from 'src/views/post/category/detail/Content'
+import MenuDetailContent from 'src/views/config/menu/detail/Content'
 
 export default function DetailCategory() {
-  return <CategoryPostDetailContent />
+  return <MenuDetailContent />
 }

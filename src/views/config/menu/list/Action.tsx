@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Box, Button, FormControlLabel, Stack, Switch } from '@mui/material'
 import { Plus } from 'mdi-material-ui'
-import { useState } from 'react'
 
 import _ from 'lodash'
 import { useRouter } from 'next/router'
@@ -48,14 +47,14 @@ const Action: React.FC<any> = ({ formFilter, setFormFilter }) => {
 
             <Button
               onClick={() => {
-                router.push('/post/category/add')
+                router.push('/config/menu/add')
               }}
               variant='contained'
               color='primary'
               sx={{ whiteSpace: 'nowrap' }}
               startIcon={<Plus />}
             >
-              Add New Category
+              Add New Menu
             </Button>
           </Stack>
         </Stack>

@@ -31,7 +31,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import { stringAvatar } from 'src/utils/string-avatar'
 import { useRouter } from 'next/router'
-import { deleteCategoryPost } from 'src/api/category-post.service'
+import { deleteMenu } from 'src/api/menu.service'
 
 const StyledTableCell = styled(TableCell)<TableCellProps>(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -64,10 +64,10 @@ const TableContent: React.FC<any> = ({ rows, isLoading, isError }) => {
   const router = useRouter()
 
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => deleteCategoryPost(id),
+    mutationFn: (id: number) => deleteMenu(id),
     onSuccess: async (response: any) => {
       toast.success(response?.message || 'Delete success!')
-      await queryClient.invalidateQueries(['CATEGORIES_POST'])
+      await queryClient.invalidateQueries(['MENU'])
       setOpenDialog(false)
     },
     onError: (error: any) => {
@@ -80,7 +80,7 @@ const TableContent: React.FC<any> = ({ rows, isLoading, isError }) => {
   }
 
   const handleDetailClick = (id: any) => {
-    router.push(`/post/category/${id}`)
+    router.push(`/config/menu/${id}`)
   }
 
   const handleDeleteSubmit = () => {

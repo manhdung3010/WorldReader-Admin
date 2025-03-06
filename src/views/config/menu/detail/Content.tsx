@@ -18,15 +18,11 @@ import {
 import CustomUploadSingle from 'src/components/CustomUploadSingle'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import { schemaCreateCategoryPost } from '../schema/schema'
-import {
-  createCategoryPost,
-  getCategoryPost,
-  getDetailCategoryPost,
-  updateCategoryPost
-} from 'src/api/category-post.service'
 
-export default function CategoryPostDetailContent() {
+import { schemaCreateMenu } from '../schema/schema'
+import { createMenu, getDetailMenu, getMenu, updateMenu } from 'src/api/menu.service'
+
+export default function MenuDetailContent() {
   const [optionCategories, setOptionCategories] = useState([])
   const [isLoading, setIsLoading] = useState(false)
 
@@ -34,16 +30,14 @@ export default function CategoryPostDetailContent() {
 
   const router = useRouter()
 
-  const { data: categoryProductDetail } = useQuery(
-    ['CATEGORY_PRODUCT_DETAIL', router.query.id],
-    () => getDetailCategoryPost(Number(router.query.id)),
-    { enabled: router.query.id !== 'add' }
-  )
+  const { data: menuDetail } = useQuery(['MENU', router.query.id], () => getDetailMenu(Number(router.query.id)), {
+    enabled: router.query.id !== 'add'
+  })
 
-  const { data: categories } = useQuery({
-    queryKey: ['CATEGORIES'],
+  const { data: menu } = useQuery({
+    queryKey: ['MENU'],
     queryFn: () =>
-      getCategoryPost({
+      getMenu({
         name: '',
         url: '',
         display: null,
@@ -56,10 +50,10 @@ export default function CategoryPostDetailContent() {
   })
 
   useEffect(() => {
-    if (categories) {
-      setOptionCategories(categories.data)
+    if (menu) {
+      setOptionCategories(menu.data)
     }
-  }, [categories])
+  }, [menu])
 
   const {
     getValues,
@@ -69,26 +63,26 @@ export default function CategoryPostDetailContent() {
     reset,
     formState: { errors }
   } = useForm({
-    resolver: yupResolver(schemaCreateCategoryPost),
+    resolver: yupResolver(schemaCreateMenu),
     mode: 'onChange'
   })
 
   useEffect(() => {
-    if (categoryProductDetail) {
-      reset(categoryProductDetail?.data)
+    if (menuDetail) {
+      reset(menuDetail?.data)
 
       setValue(
         'parentIds',
-        categoryProductDetail?.data?.parents?.map((item: any) => item?.id)
+        menuDetail?.data?.parents?.map((item: any) => item?.id)
       )
     }
-  }, [categoryProductDetail, reset])
+  }, [menuDetail, reset])
 
   const { mutate: handleMutate } = useMutation(
     (data: any) => {
       setIsLoading(true)
 
-      return router.query.id !== 'add' ? updateCategoryPost(data.id, data) : createCategoryPost(data)
+      return router.query.id !== 'add' ? updateMenu(data.id, data) : createMenu(data)
     },
     {
       onSuccess: async (response: any) => {
@@ -109,7 +103,7 @@ export default function CategoryPostDetailContent() {
   return (
     <div>
       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Typography variant='h5'>{getValues('name') || 'Add Category'}</Typography>
+        <Typography variant='h5'>{getValues('name') || 'Add Menu'}</Typography>
         <Stack direction='row' justifyContent='end' gap={5}>
           <Button
             onClick={() => router.back()}

@@ -1,5 +1,5 @@
-import CategoryPostContent from 'src/views/post/category/list/Content'
+import MenuContent from 'src/views/config/menu/list/Content'
 
 export default function CategoryPage() {
-  return <CategoryPostContent />
+  return <MenuContent />
 }

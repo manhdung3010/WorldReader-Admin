@@ -7,51 +7,44 @@ import { useEffect, useState } from 'react'
 import Action from './Action'
 import Filters from './Filters'
 import CustomPagination from 'src/components/CustomPagination'
-import { getMenu } from 'src/api/menu.service'
+import { getOrder } from 'src/api/order.service'
+import { LocalizationProvider } from '@mui/x-date-pickers'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
-const MenuContent = () => {
+const OrderContent = () => {
   const [rows, setRows] = useState<any[]>([])
   const [totalPages, setTotalPages] = useState(1)
 
   const [formFilter, setFormFilter] = useState({
-    name: '',
-    url: '',
-    display: null,
-    homeDisplay: null,
+    status: undefined,
+    payStatus: undefined,
+    priceFrom: undefined,
+    priceTo: undefined,
+    userId: undefined,
+    createAtFrom: undefined,
+    createAtTo: undefined,
     page: 1,
     pageSize: 10
   })
 
   const {
-    data: menu,
+    data: discounts,
     isLoading,
     isError
-  } = useQuery<any>(
-    [
-      'MENU',
-      formFilter.name,
-      formFilter.url,
-      formFilter.display,
-      formFilter.homeDisplay,
-      formFilter.page,
-      formFilter.pageSize
-    ],
-    () => getMenu(formFilter),
-    {
-      refetchOnWindowFocus: false
-    }
-  )
+  } = useQuery<any>(['ORDERS', formFilter], () => getOrder(formFilter), { refetchOnWindowFocus: false })
 
   useEffect(() => {
-    if (menu?.data) {
-      setRows(menu.data)
-      setTotalPages(menu.totalPages || Math.ceil(menu.totalCount / formFilter.pageSize) || 1)
+    if (discounts?.data) {
+      setRows(discounts.data)
+      setTotalPages(discounts.totalPages || Math.ceil(discounts.totalCount / formFilter.pageSize) || 1)
     }
-  }, [menu])
+  }, [discounts])
 
   return (
     <Card>
-      <Filters formFilter={formFilter} setFormFilter={setFormFilter} />
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <Filters formFilter={formFilter} setFormFilter={setFormFilter} />
+      </LocalizationProvider>
       <Divider />
       <Action formFilter={formFilter} setFormFilter={setFormFilter} />
       <TableContent rows={rows} isLoading={isLoading} isError={isError} />
@@ -60,4 +53,4 @@ const MenuContent = () => {
   )
 }
 
-export default MenuContent
+export default OrderContent
