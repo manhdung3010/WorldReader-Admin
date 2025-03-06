@@ -5,54 +5,50 @@ import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import Action from './Action'
 import Filters from './Filters'
-import { getProduct } from 'src/api/product.service'
 import CustomPagination from 'src/components/CustomPagination'
+import { getPost } from 'src/api/post.service'
 
-const ProductContent = () => {
+const PostContent = () => {
   const [rows, setRows] = useState<any[]>([])
   const [totalPages, setTotalPages] = useState(1)
 
   const [formFilter, setFormFilter] = useState({
     name: '',
-    code: '',
-    priceMin: '',
-    priceMax: '',
-    status: '',
-    isDiscount: null,
+    url: '',
+    author: '',
+    homeDisplay: null,
     display: null,
     page: 1,
     pageSize: 10
   })
 
   const {
-    data: products,
+    data: posts,
     isLoading,
     isError
   } = useQuery<any>(
     [
-      'PRODUCTS',
+      'POSTS',
       formFilter.name,
-      formFilter.code,
-      formFilter.priceMin,
-      formFilter.priceMax,
-      formFilter.status,
-      formFilter.isDiscount,
+      formFilter.url,
+      formFilter.author,
+      formFilter.homeDisplay,
       formFilter.display,
       formFilter.page,
       formFilter.pageSize
     ],
-    () => getProduct(formFilter),
+    () => getPost(formFilter),
     {
       refetchOnWindowFocus: false
     }
   )
 
   useEffect(() => {
-    if (products?.data) {
-      setRows(products.data)
-      setTotalPages(products.totalPages || Math.ceil(products.totalCount / formFilter.pageSize) || 1)
+    if (posts?.data) {
+      setRows(posts.data)
+      setTotalPages(posts.totalPages || Math.ceil(posts.totalCount / formFilter.pageSize) || 1)
     }
-  }, [products])
+  }, [posts])
 
   return (
     <Card>
@@ -65,4 +61,4 @@ const ProductContent = () => {
   )
 }
 
-export default ProductContent
+export default PostContent

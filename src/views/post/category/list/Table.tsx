@@ -12,9 +12,11 @@ import { styled } from '@mui/material/styles'
 import TableNoData from 'src/components/TableNoData'
 import TableLoading from 'src/components/TableLoading'
 import TableError from 'src/components/TableError'
-import { Delete, Pencil } from 'mdi-material-ui'
+import { Check, Close, Delete, Pencil } from 'mdi-material-ui'
 import {
+  Avatar,
   Button,
+  Chip,
   Dialog,
   DialogActions,
   DialogContent,
@@ -27,8 +29,9 @@ import {
 import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
+import { stringAvatar } from 'src/utils/string-avatar'
 import { useRouter } from 'next/router'
-import { deleteKeywordProduct } from 'src/api/keyword-product.service'
+import { deleteCategoryPost } from 'src/api/category-post.service'
 
 const StyledTableCell = styled(TableCell)<TableCellProps>(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -40,10 +43,18 @@ const StyledTableCell = styled(TableCell)<TableCellProps>(({ theme }) => ({
 }))
 
 const columns = [
+  { id: 'image', label: 'Image' },
   { id: 'name', label: 'Name' },
-  { id: 'code', label: 'Code' },
+  { id: 'display', label: 'Display' },
+  { id: 'homeDisplay', label: 'Home Display' },
+  { id: 'description', label: 'Description' },
   { id: 'action', label: 'Action' }
 ]
+
+const booleanObj: any = {
+  true: { color: 'info' },
+  false: { color: 'error' }
+}
 
 const TableContent: React.FC<any> = ({ rows, isLoading, isError }) => {
   const [openDialog, setOpenDialog] = useState(false)
@@ -53,10 +64,10 @@ const TableContent: React.FC<any> = ({ rows, isLoading, isError }) => {
   const router = useRouter()
 
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => deleteKeywordProduct(id),
+    mutationFn: (id: number) => deleteCategoryPost(id),
     onSuccess: async (response: any) => {
       toast.success(response?.message || 'Delete success!')
-      await queryClient.invalidateQueries(['KEYWORDS_PRODUCT'])
+      await queryClient.invalidateQueries(['CATEGORIES_POST'])
       setOpenDialog(false)
     },
     onError: (error: any) => {
@@ -69,7 +80,7 @@ const TableContent: React.FC<any> = ({ rows, isLoading, isError }) => {
   }
 
   const handleDetailClick = (id: any) => {
-    router.push(`/product/keyword/${id}`)
+    router.push(`/post/category/${id}`)
   }
 
   const handleDeleteSubmit = () => {
@@ -87,7 +98,7 @@ const TableContent: React.FC<any> = ({ rows, isLoading, isError }) => {
           <TableHead>
             <TableRow>
               {columns.map(column => (
-                <StyledTableCell key={column.id}>{column.label}</StyledTableCell>
+                <StyledTableCell key={column.id}> {column.label}</StyledTableCell>
               ))}
             </TableRow>
           </TableHead>
@@ -99,8 +110,30 @@ const TableContent: React.FC<any> = ({ rows, isLoading, isError }) => {
             ) : rows.length > 0 ? (
               rows.map((row: any) => (
                 <TableRow hover key={row.id} sx={{ '&:last-of-type td, &:last-of-type th': { border: 0 } }}>
+                  <TableCell sx={{ py: theme => `${theme.spacing(0.5)} !important` }}>
+                    <Stack direction='row' spacing={2}>
+                      {row?.image ? (
+                        <Avatar alt={row?.name} src={row?.image} />
+                      ) : (
+                        <Avatar {...stringAvatar(row?.name)} />
+                      )}
+                    </Stack>
+                  </TableCell>
                   <TableCell>{row.name || '-'}</TableCell>
-                  <TableCell>{row.code || '-'}</TableCell>
+                  <TableCell>
+                    <Chip label={row.display ? <Check /> : <Close />} color={booleanObj[row.display].color} />
+                  </TableCell>
+                  <TableCell>
+                    <Chip label={row.homeDisplay ? <Check /> : <Close />} color={booleanObj[row.homeDisplay].color} />
+                  </TableCell>
+                  <TableCell sx={{ maxWidth: 400 }}>
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html:
+                          row.description.length > 100 ? row.description.slice(0, 100) + '...' : row.description || '-'
+                      }}
+                    />
+                  </TableCell>
 
                   <TableCell>
                     <Tooltip title='Edit'>

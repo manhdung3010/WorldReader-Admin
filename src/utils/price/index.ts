@@ -1,23 +1,23 @@
-export function formatCurrency(amount: number, currency: 'VND' | 'USD'): string {
-  let formattedAmount: string
+export function formatCurrency(amount: number, currency: 'VND' | 'USD' = 'VND'): string {
+  if (isNaN(amount) || amount == null) {
+    return '0 đ' // Mặc định trả về "0 đ" nếu giá trị không hợp lệ
+  }
 
   switch (currency) {
     case 'VND':
-      formattedAmount = new Intl.NumberFormat('vi-VN', {
+      return new Intl.NumberFormat('vi-VN', {
         style: 'currency',
         currency: 'VND',
         minimumFractionDigits: 0
-      }).format(amount)
+      }).format(amount).replace('₫', 'đ')
 
-      return formattedAmount.replace('₫', 'đ')
     case 'USD':
-      formattedAmount = new Intl.NumberFormat('en-US', {
+      return new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD',
         minimumFractionDigits: 2
       }).format(amount)
 
-      return formattedAmount
     default:
       throw new Error('Unsupported currency')
   }

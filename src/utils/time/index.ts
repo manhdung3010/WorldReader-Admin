@@ -25,11 +25,11 @@ export function displayDateTime(dateString: any) {
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
 }
 
-export function isFlashSaleActive(flashSale: any) {
+export function isInTime(startTimeValue: any, endTimeValue: any) {
   const currentTime = new Date()
 
-  const startTime = new Date(flashSale.flashSaleStartTime)
-  const endTime = new Date(flashSale.flashSaleEndTime)
+  const startTime = new Date(startTimeValue)
+  const endTime = new Date(endTimeValue)
 
   return currentTime >= startTime && currentTime <= endTime
 }

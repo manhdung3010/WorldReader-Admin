@@ -1,58 +1,43 @@
 // ** MUI Imports
+import Card from '@mui/material/Card'
 import TableContent from './Table'
-import { Card, Divider } from '@mui/material'
+import { Divider } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import Action from './Action'
 import Filters from './Filters'
-import { getProduct } from 'src/api/product.service'
 import CustomPagination from 'src/components/CustomPagination'
+import { getKeywordPost } from 'src/api/keyword-post.service'
 
-const ProductContent = () => {
+const KeywordPostContent = () => {
   const [rows, setRows] = useState<any[]>([])
   const [totalPages, setTotalPages] = useState(1)
 
   const [formFilter, setFormFilter] = useState({
     name: '',
     code: '',
-    priceMin: '',
-    priceMax: '',
-    status: '',
-    isDiscount: null,
-    display: null,
     page: 1,
     pageSize: 10
   })
 
   const {
-    data: products,
+    data: keywordPost,
     isLoading,
     isError
   } = useQuery<any>(
-    [
-      'PRODUCTS',
-      formFilter.name,
-      formFilter.code,
-      formFilter.priceMin,
-      formFilter.priceMax,
-      formFilter.status,
-      formFilter.isDiscount,
-      formFilter.display,
-      formFilter.page,
-      formFilter.pageSize
-    ],
-    () => getProduct(formFilter),
+    ['KEYWORDS_POST', formFilter.name, formFilter.code, formFilter.page, formFilter.pageSize],
+    () => getKeywordPost(formFilter),
     {
       refetchOnWindowFocus: false
     }
   )
 
   useEffect(() => {
-    if (products?.data) {
-      setRows(products.data)
-      setTotalPages(products.totalPages || Math.ceil(products.totalCount / formFilter.pageSize) || 1)
+    if (keywordPost?.data) {
+      setRows(keywordPost.data)
+      setTotalPages(keywordPost.totalPages || Math.ceil(keywordPost.totalCount / formFilter.pageSize) || 1)
     }
-  }, [products])
+  }, [keywordPost])
 
   return (
     <Card>
@@ -65,4 +50,4 @@ const ProductContent = () => {
   )
 }
 
-export default ProductContent
+export default KeywordPostContent

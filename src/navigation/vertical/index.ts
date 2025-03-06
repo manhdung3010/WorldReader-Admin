@@ -120,6 +120,21 @@ const navigation = (): VerticalNavItemsType => {
         }
       ]
     },
+
+    {
+      sectionTitle: 'Config'
+    },
+    {
+      title: 'Config',
+      icon: PostOutline,
+      children: [
+        {
+          title: 'Menu',
+          path: '/config/menu'
+        }
+      ]
+    },
+
     {
       sectionTitle: 'User Interface'
     },

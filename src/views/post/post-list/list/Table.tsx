@@ -26,7 +26,6 @@ import {
   DialogTitle,
   Divider,
   IconButton,
-  Rating,
   Stack,
   Tooltip,
   Typography
@@ -37,7 +36,6 @@ import toast from 'react-hot-toast'
 import { stringAvatar } from 'src/utils/string-avatar'
 import { useRouter } from 'next/router'
 import { deleteProduct } from 'src/api/product.service'
-import { displayDateTime, isInTime } from 'src/utils/time'
 
 const StyledTableCell = styled(TableCell)<TableCellProps>(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -49,27 +47,18 @@ const StyledTableCell = styled(TableCell)<TableCellProps>(({ theme }) => ({
 }))
 
 const columns = [
-  { id: 'avatar', label: 'Avatar' },
+  { id: 'thumbnail', label: 'Thumbnail' },
   { id: 'name', label: 'Name' },
-  { id: 'code', label: 'Code' },
-  { id: 'price', label: 'Price' },
-  { id: 'discountPrice', label: 'Discount Price' },
-  { id: 'displayQuantity', label: 'Quantity' },
-  { id: 'quantityInUse', label: 'Use' },
-  { id: 'quantityInStock', label: 'Stock' },
+  { id: 'author', label: 'Author' },
+  { id: 'url', label: 'Url' },
   { id: 'display', label: 'Display' },
-  { id: 'status', label: 'Status' },
+  { id: 'homeDisplay', label: 'Home Display' },
   { id: 'action', label: 'Action' }
 ]
 
 const booleanObj: any = {
   true: { color: 'info' },
   false: { color: 'error' }
-}
-
-const statusObj: any = {
-  IN_STOCK: { color: 'info' },
-  OUT_OF_STOCK: { color: 'error' }
 }
 
 const TableContent: React.FC<any> = ({ rows, isLoading, isError }) => {
@@ -85,7 +74,7 @@ const TableContent: React.FC<any> = ({ rows, isLoading, isError }) => {
     mutationFn: (id: number) => deleteProduct(id),
     onSuccess: async (response: any) => {
       toast.success(response?.message || 'Delete success!')
-      await queryClient.invalidateQueries(['PRODUCTS'])
+      await queryClient.invalidateQueries(['POSTS'])
       setOpenDialog(false)
     },
     onError: (error: any) => {
@@ -98,7 +87,7 @@ const TableContent: React.FC<any> = ({ rows, isLoading, isError }) => {
   }
 
   const handleDetailClick = (id: any) => {
-    router.push(`/product/${id}`)
+    router.push(`/post/${id}`)
   }
 
   const handleDeleteSubmit = () => {
@@ -121,29 +110,27 @@ const TableContent: React.FC<any> = ({ rows, isLoading, isError }) => {
         <TableRow
           onClick={() => setOpen(!open)}
           sx={{
-            cursor: 'pointer',
-            border: isInTime(row?.flashSale?.flashSaleStartTime, row?.flashSale?.flashSaleEndTime)
-              ? '1px solid red '
-              : ''
+            cursor: 'pointer'
           }}
         >
           <TableCell sx={{ py: theme => `${theme.spacing(0.5)} !important` }}>
             <Stack direction='row' spacing={2}>
-              {row?.avatar ? <Avatar alt={row?.name} src={row?.avatar} /> : <Avatar {...stringAvatar(row?.name)} />}
+              {row?.thumbnail ? (
+                <Avatar alt={row?.name} src={row?.thumbnail} />
+              ) : (
+                <Avatar {...stringAvatar(row?.name)} />
+              )}
             </Stack>
           </TableCell>
           <TableCell>{row.name.length > 30 ? row.name.slice(0, 30) + '...' : row.name || '-'}</TableCell>
-          <TableCell>{row.code.length > 30 ? row.code.slice(0, 30) + '...' : row.code || '-'}</TableCell>
-          <TableCell>{row.price || '-'}</TableCell>
-          <TableCell>{row.discountPrice || '-'}</TableCell>
-          <TableCell>{row?.productWarehouse?.displayQuantity || '-'}</TableCell>
-          <TableCell>{row?.productWarehouse?.quantityInUse || '-'}</TableCell>
-          <TableCell>{row?.productWarehouse?.quantityInStock || '-'}</TableCell>
+          <TableCell>{row.url.length > 30 ? row.url.slice(0, 30) + '...' : row.url || '-'}</TableCell>
+          <TableCell>{row.author.length > 30 ? row.author.slice(0, 30) + '...' : row.author || '-'}</TableCell>
+
           <TableCell>
             <Chip label={row.display ? <Check /> : <Close />} color={booleanObj[row.display].color} />
           </TableCell>
           <TableCell>
-            <Chip label={row.status ? 'In Stock' : 'Out Of Stock'} color={statusObj[row.status].color} />
+            <Chip label={row.homeDisplay ? <Check /> : <Close />} color={booleanObj[row.homeDisplay].color} />
           </TableCell>
 
           <TableCell>
@@ -216,36 +203,6 @@ const TableContent: React.FC<any> = ({ rows, isLoading, isError }) => {
                   <Typography variant='body2'>
                     <strong>Keywords:</strong>{' '}
                     {row.keywords?.map((key: any) => key.name).join(', ') || 'No keywords available'}
-                  </Typography>
-                  <Typography variant='body2'>
-                    <strong>Additional Information:</strong>{' '}
-                    {row.information?.length > 0
-                      ? row.information.map((info: any) => `${info.name}: ${info.content}`).join(', ')
-                      : 'No information available'}
-                  </Typography>
-                  <Typography variant='body2' sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <strong>Average Rating:</strong>{' '}
-                    {row.averageStarRating > 0 ? (
-                      <Rating value={row.averageStarRating} readOnly size='small' precision={0.5} />
-                    ) : (
-                      'No ratings yet'
-                    )}
-                  </Typography>
-                  <Typography variant='body2'>
-                    <strong>Flash Sale:</strong>{' '}
-                    {row.flashSale?.flashSalePrice > 0 ? (
-                      <span>
-                        Price:{' '}
-                        <span style={{ color: theme.palette.success.main }}>
-                          {row.flashSale.flashSalePrice.toLocaleString()} VND
-                        </span>
-                        , Discount: <strong>{row.flashSale.flashSaleDiscount}%</strong>, Start:{' '}
-                        {displayDateTime(row.flashSale.flashSaleStartTime)}, End:{' '}
-                        {displayDateTime(row.flashSale.flashSaleEndTime)}
-                      </span>
-                    ) : (
-                      'No flash sale available'
-                    )}
                   </Typography>
                   <Divider sx={{ my: 2 }} /> {/* Added spacing for Divider */}
                   <Typography variant='body2'>

@@ -28,7 +28,7 @@ import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
-import { deleteKeywordProduct } from 'src/api/keyword-product.service'
+import { deleteKeywordPost } from 'src/api/keyword-post.service'
 
 const StyledTableCell = styled(TableCell)<TableCellProps>(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -53,10 +53,10 @@ const TableContent: React.FC<any> = ({ rows, isLoading, isError }) => {
   const router = useRouter()
 
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => deleteKeywordProduct(id),
+    mutationFn: (id: number) => deleteKeywordPost(id),
     onSuccess: async (response: any) => {
       toast.success(response?.message || 'Delete success!')
-      await queryClient.invalidateQueries(['KEYWORDS_PRODUCT'])
+      await queryClient.invalidateQueries(['KEYWORDS_POST'])
       setOpenDialog(false)
     },
     onError: (error: any) => {
@@ -69,7 +69,7 @@ const TableContent: React.FC<any> = ({ rows, isLoading, isError }) => {
   }
 
   const handleDetailClick = (id: any) => {
-    router.push(`/product/keyword/${id}`)
+    router.push(`/post/keyword/${id}`)
   }
 
   const handleDeleteSubmit = () => {
