@@ -12,7 +12,7 @@ import { styled, useTheme } from '@mui/material/styles'
 import TableNoData from 'src/components/TableNoData'
 import TableLoading from 'src/components/TableLoading'
 import TableError from 'src/components/TableError'
-import { Check, Close, Delete, Pencil } from 'mdi-material-ui'
+import { Check, Close, Comment, Delete, Pencil } from 'mdi-material-ui'
 import {
   Avatar,
   Box,
@@ -147,27 +147,39 @@ const TableContent: React.FC<any> = ({ rows, isLoading, isError }) => {
           </TableCell>
 
           <TableCell>
-            <Tooltip title='Edit'>
-              <IconButton
-                aria-label='View'
-                onClick={() => {
-                  handleDetailClick(row?.id)
-                }}
-              >
-                <Pencil />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title='Remove'>
-              <IconButton
-                aria-label='Delete'
-                onClick={() => {
-                  handleDeleteClick()
-                  setDetailData(row)
-                }}
-              >
-                <Delete color='error' />
-              </IconButton>
-            </Tooltip>
+            <Stack direction='row'>
+              <Tooltip title='Comment'>
+                <IconButton
+                  aria-label='Comment'
+                  onClick={() => {
+                    router.push(`/product/${row?.id}/review`)
+                  }}
+                >
+                  <Comment />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title='Edit'>
+                <IconButton
+                  aria-label='View'
+                  onClick={() => {
+                    handleDetailClick(row?.id)
+                  }}
+                >
+                  <Pencil />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title='Remove'>
+                <IconButton
+                  aria-label='Delete'
+                  onClick={() => {
+                    handleDeleteClick()
+                    setDetailData(row)
+                  }}
+                >
+                  <Delete color='error' />
+                </IconButton>
+              </Tooltip>
+            </Stack>
           </TableCell>
         </TableRow>
         <TableRow>
@@ -249,7 +261,12 @@ const TableContent: React.FC<any> = ({ rows, isLoading, isError }) => {
                   </Typography>
                   <Divider sx={{ my: 2 }} /> {/* Added spacing for Divider */}
                   <Typography variant='body2'>
-                    <strong>Description:</strong> {row.description || 'No description available'}
+                    <strong>Description:</strong>{' '}
+                    <p
+                      dangerouslySetInnerHTML={{
+                        __html: row.description || 'No description available'
+                      }}
+                    />
                   </Typography>
                 </Stack>
               </Box>

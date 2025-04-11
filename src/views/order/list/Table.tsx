@@ -130,11 +130,6 @@ const TableContent: React.FC<any> = ({ rows, isLoading, isError }) => {
           </TableCell>
 
           <TableCell>
-            <Tooltip title='Edit'>
-              <IconButton onClick={() => handleDetailClick(row.id)}>
-                <Pencil />
-              </IconButton>
-            </Tooltip>
             <Tooltip title='Remove'>
               <IconButton
                 onClick={() => {
