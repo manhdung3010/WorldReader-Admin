@@ -1,5 +1,4 @@
 // ** MUI Imports
-import Card from '@mui/material/Card'
 import Table from '@mui/material/Table'
 import TableRow from '@mui/material/TableRow'
 import TableHead from '@mui/material/TableHead'
@@ -48,7 +47,6 @@ const columns = [
   { id: 'name', label: 'Name' },
   { id: 'display', label: 'Display' },
   { id: 'homeDisplay', label: 'Home Display' },
-  { id: 'description', label: 'Description' },
   { id: 'action', label: 'Action' }
 ]
 
@@ -127,15 +125,6 @@ const TableContent: React.FC<any> = ({ rows, isLoading, isError }) => {
                   <TableCell>
                     <Chip label={row.homeDisplay ? <Check /> : <Close />} color={booleanObj[row.homeDisplay].color} />
                   </TableCell>
-                  <TableCell sx={{ maxWidth: 400 }}>
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html:
-                          row.description.length > 100 ? row.description.slice(0, 100) + '...' : row.description || '-'
-                      }}
-                    />
-                  </TableCell>
-
                   <TableCell>
                     <Tooltip title='Edit'>
                       <IconButton

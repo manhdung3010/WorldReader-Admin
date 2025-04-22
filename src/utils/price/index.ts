@@ -1,4 +1,4 @@
-export function formatCurrency(amount: number, currency: 'VND' | 'USD' = 'VND'): string {
+export function formatCurrency(amount: number, currency: 'VND' | 'USD' = 'USD'): string {
   if (isNaN(amount) || amount == null) {
     return '0 đ' // Mặc định trả về "0 đ" nếu giá trị không hợp lệ
   }
@@ -9,7 +9,9 @@ export function formatCurrency(amount: number, currency: 'VND' | 'USD' = 'VND'):
         style: 'currency',
         currency: 'VND',
         minimumFractionDigits: 0
-      }).format(amount).replace('₫', 'đ')
+      })
+        .format(amount)
+        .replace('₫', 'đ')
 
     case 'USD':
       return new Intl.NumberFormat('en-US', {

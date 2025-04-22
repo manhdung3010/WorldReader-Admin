@@ -2,7 +2,7 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/router'
-import { Controller, useForm, useFieldArray } from 'react-hook-form'
+import { Controller, useForm, useFieldArray, useWatch } from 'react-hook-form'
 import { createProduct, getProduct, getDetailProduct, updateProduct } from 'src/api/product.service' // Giả sử API
 import {
   Box,
@@ -164,10 +164,32 @@ export default function ProductDetailContent() {
     handleMutate(data)
   }
 
+  const name = useWatch({ control, name: 'name' })
+  const description = useWatch({ control, name: 'description' })
+
+  useEffect(() => {
+    if (name) {
+      const generatedCode = name
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '') // xóa dấu
+        .toLowerCase()
+        .replace(/[^a-z0-9-]/g, '-') // thay ký tự đặc biệt bằng "-"
+        .replace(/-+/g, '-') // gộp nhiều dấu "-" thành 1
+        .replace(/^-|-$/g, '')
+
+      const plainDescription = description?.replace(/<[^>]*>/g, '').trim() || ''
+
+      setValue('code', generatedCode)
+      setValue('url', generatedCode)
+      setValue('seo.title', name)
+      setValue('seo.description', plainDescription)
+    }
+  }, [name, setValue])
+
   return (
     <div>
       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Typography variant='h5'>{getValues('name') || 'Add Product'}</Typography>
+        <Typography variant='h5'>{productDetail?.data?.name || 'Add Product'}</Typography>
         <Stack direction='row' justifyContent='end' gap={5}>
           <Button onClick={() => router.back()} variant='outlined' color='inherit' sx={{ height: '44px' }}>
             Hủy

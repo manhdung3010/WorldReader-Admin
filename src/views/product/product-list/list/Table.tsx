@@ -38,6 +38,7 @@ import { stringAvatar } from 'src/utils/string-avatar'
 import { useRouter } from 'next/router'
 import { deleteProduct } from 'src/api/product.service'
 import { displayDateTime, isInTime } from 'src/utils/time'
+import { formatCurrency } from 'src/utils/price'
 
 const StyledTableCell = styled(TableCell)<TableCellProps>(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -134,8 +135,8 @@ const TableContent: React.FC<any> = ({ rows, isLoading, isError }) => {
           </TableCell>
           <TableCell>{row.name.length > 30 ? row.name.slice(0, 30) + '...' : row.name || '-'}</TableCell>
           <TableCell>{row.code.length > 30 ? row.code.slice(0, 30) + '...' : row.code || '-'}</TableCell>
-          <TableCell>{row.price || '-'}</TableCell>
-          <TableCell>{row.discountPrice || '-'}</TableCell>
+          <TableCell>{formatCurrency(row.price) || '-'}</TableCell>
+          <TableCell>{row.discountPrice ? `${row.discountPrice}%` : '-'}</TableCell>
           <TableCell>{row?.productWarehouse?.displayQuantity || '-'}</TableCell>
           <TableCell>{row?.productWarehouse?.quantityInUse || '-'}</TableCell>
           <TableCell>{row?.productWarehouse?.quantityInStock || '-'}</TableCell>
@@ -249,7 +250,7 @@ const TableContent: React.FC<any> = ({ rows, isLoading, isError }) => {
                       <span>
                         Price:{' '}
                         <span style={{ color: theme.palette.success.main }}>
-                          {row.flashSale.flashSalePrice.toLocaleString()} VND
+                          {formatCurrency(row.flashSale.flashSalePrice)}
                         </span>
                         , Discount: <strong>{row.flashSale.flashSaleDiscount}%</strong>, Start:{' '}
                         {displayDateTime(row.flashSale.flashSaleStartTime)}, End:{' '}

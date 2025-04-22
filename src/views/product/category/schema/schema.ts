@@ -11,7 +11,7 @@ export const schemaCreateCategory = yup.object().shape({
 
   homeDisplay: yup.boolean().required('Home display field is required'),
 
-  image: yup.string().notRequired(),
+  image: yup.array().of(yup.string()).nullable(),
 
   parentIds: yup.array().default([]),
 

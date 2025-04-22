@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/router'
-import { Controller, useForm } from 'react-hook-form'
+import { Controller, useForm, useWatch } from 'react-hook-form'
 import { createCategory, getCategory, getDetailCategory, updateCategory } from 'src/api/category.service'
 import { schemaCreateCategory } from '../schema/schema'
 import {
@@ -29,8 +29,10 @@ export default function CategoryDetailContent() {
 
   const router = useRouter()
 
-  const { data: categoryProductDetail } = useQuery(['CATEGORY_PRODUCT_DETAIL', router.query.id], () =>
-    getDetailCategory(Number(router.query.id))
+  const { data: categoryProductDetail } = useQuery(
+    ['CATEGORY_PRODUCT_DETAIL', router.query.id],
+    () => getDetailCategory(Number(router.query.id)),
+    { enabled: router.query.id !== 'add' }
   )
 
   const { data: categories } = useQuery({
@@ -89,6 +91,7 @@ export default function CategoryDetailContent() {
         await queryClient.invalidateQueries(['CATEGORIES'])
         toast.success(response.message || 'Success!')
         setIsLoading(false)
+        router.back()
       },
       onError: (error: Error) => {
         toast.error(error.message || 'Failed!')
@@ -99,11 +102,28 @@ export default function CategoryDetailContent() {
   const onSubmit = (data: any) => {
     handleMutate(data)
   }
+  const name = useWatch({ control, name: 'name' })
+  const description = useWatch({ control, name: 'description' })
+
+  useEffect(() => {
+    if (name) {
+      const generatedCode = name
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '') // xóa dấu tiếng Việt
+        .toLowerCase()
+        .replace(/[^a-z0-9\-]/g, '-') // thay ký tự đặc biệt trừ "-" thành "-"
+        .replace(/^-+|-+$/g, '') // xóa dấu "-" ở đầu hoặc cuối chuỗi
+
+      setValue('url', generatedCode)
+      setValue('seo.title', name)
+      setValue('seo.description', description)
+    }
+  }, [name, description, setValue])
 
   return (
     <div>
       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Typography variant='h5'>{getValues('name') || 'Add Category'}</Typography>
+        <Typography variant='h5'>{categoryProductDetail?.data?.name || 'Add Category'}</Typography>
         <Stack direction='row' justifyContent='end' gap={5}>
           <Button
             onClick={() => router.back()}
@@ -245,7 +265,7 @@ export default function CategoryDetailContent() {
             <Controller
               name='homeDisplay'
               control={control}
-              defaultValue={false}
+              defaultValue={true}
               render={({ field }) => (
                 <FormControlLabel control={<Switch {...field} checked={field.value} />} label='Home Display' />
               )}
