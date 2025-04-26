@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/router'
-import { Controller, useForm } from 'react-hook-form'
+import { Controller, useForm, useWatch } from 'react-hook-form'
 import { Box, Button, Card, Grid, Stack, TextField, Typography, CircularProgress } from '@mui/material'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -25,6 +25,7 @@ export default function KeywordPostDetailContent() {
     getValues,
     handleSubmit,
     control,
+    setValue,
     reset,
     formState: { errors }
   } = useForm({
@@ -59,6 +60,22 @@ export default function KeywordPostDetailContent() {
   const onSubmit = (data: any) => {
     handleMutate(data)
   }
+
+  const name = useWatch({ control, name: 'name' })
+
+  useEffect(() => {
+    if (name) {
+      const generatedCode = name
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '') // xóa dấu
+        .toLowerCase()
+        .replace(/[^a-z0-9-]/g, '-') // thay ký tự đặc biệt bằng "-"
+        .replace(/-+/g, '-') // gộp nhiều dấu "-" thành 1
+        .replace(/^-|-$/g, '')
+
+      setValue('code', generatedCode)
+    }
+  }, [name, setValue])
 
   return (
     <div>

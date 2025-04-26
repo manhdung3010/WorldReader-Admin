@@ -123,9 +123,7 @@ const TableContent: React.FC<any> = ({ rows, isLoading, isError }) => {
           onClick={() => setOpen(!open)}
           sx={{
             cursor: 'pointer',
-            border: isInTime(row?.flashSale?.flashSaleStartTime, row?.flashSale?.flashSaleEndTime)
-              ? '1px solid red '
-              : ''
+            background: isInTime(row?.flashSale?.flashSaleStartTime, row?.flashSale?.flashSaleEndTime) ? '#f0f4ff' : ''
           }}
         >
           <TableCell sx={{ py: theme => `${theme.spacing(0.5)} !important` }}>

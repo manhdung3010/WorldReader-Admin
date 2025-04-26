@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/router'
-import { Controller, useForm } from 'react-hook-form'
+import { Controller, useForm, useWatch } from 'react-hook-form'
 import {
   Box,
   Button,
@@ -62,16 +62,30 @@ export default function DiscountDetailContent() {
   }, [categories])
 
   const {
-    getValues,
     setValue,
     handleSubmit,
     control,
     reset,
     watch,
-    formState: { errors }
+    formState: { errors, isSubmitting }
   } = useForm({
     resolver: yupResolver(schemaCreateDiscount),
-    mode: 'onChange'
+    mode: 'onChange',
+    defaultValues: {
+      name: '',
+      code: '',
+      active: false,
+      display: false,
+      discountType: 'PERCENTAGE',
+      price: 0,
+      maxDiscount: 0,
+      usageLimit: 0,
+      minPurchase: 0,
+      isFullDiscount: false,
+      categoryDiscount: [],
+      startTime: undefined,
+      endTime: undefined
+    }
   })
 
   useEffect(() => {
@@ -88,15 +102,18 @@ export default function DiscountDetailContent() {
     (data: any) => {
       setIsLoading(true)
 
-      return discountId ? updateDiscount(data.id, data) : createDiscount(data)
+      return discountId ? updateDiscount(discountId, data) : createDiscount(data)
     },
     {
       onSuccess: async (response: any) => {
+        console.log('Success response:', response)
         await queryClient.invalidateQueries(['DISCOUNT']) // Cập nhật cache danh sách discount
         toast.success(response.message || 'Success!')
         setIsLoading(false)
+        router.push('/discount/list')
       },
       onError: (error: Error) => {
+        console.error('Error submitting form:', error)
         toast.error(error.message || 'Failed!')
         setIsLoading(false)
       }
@@ -104,13 +121,55 @@ export default function DiscountDetailContent() {
   )
 
   const onSubmit = (data: any) => {
-    handleMutate(data)
+    console.log('Form data before processing:', data)
+
+    // Kiểm tra lỗi validation
+    if (Object.keys(errors).length > 0) {
+      console.error('Validation errors:', errors)
+      toast.error('Please fix validation errors before submitting')
+
+      return
+    }
+
+    // Chuyển đổi giá trị số từ string sang number
+    const formData = {
+      ...data,
+      price: Number(data.price),
+      maxDiscount: Number(data.maxDiscount),
+      usageLimit: Number(data.usageLimit),
+      minPurchase: Number(data.minPurchase),
+      active: Boolean(data.active),
+      display: Boolean(data.display),
+      isFullDiscount: Boolean(data.isFullDiscount),
+      categoryDiscount: data.categoryDiscount || [],
+      startTime: data.startTime ? new Date(data.startTime).toISOString() : undefined,
+      endTime: data.endTime ? new Date(data.endTime).toISOString() : undefined
+    }
+
+    console.log('Form data after processing:', formData)
+    handleMutate(formData)
   }
+
+  const name = useWatch({ control, name: 'name' })
+
+  useEffect(() => {
+    if (name) {
+      const generatedCode = name
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '') // xóa dấu
+        .toLowerCase()
+        .replace(/[^a-z0-9-]/g, '-') // thay ký tự đặc biệt bằng "-"
+        .replace(/-+/g, '-') // gộp nhiều dấu "-" thành 1
+        .replace(/^-|-$/g, '')
+
+      setValue('code', generatedCode)
+    }
+  }, [name, setValue])
 
   return (
     <div>
       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Typography variant='h5'>{getValues('name') || 'Add Discount'}</Typography>
+        <Typography variant='h5'>{discountId ? 'Edit Discount' : 'Add Discount'}</Typography>
         <Stack direction='row' justifyContent='end' gap={5}>
           <Button
             onClick={() => router.back()}
@@ -126,9 +185,15 @@ export default function DiscountDetailContent() {
             variant='contained'
             color='primary'
             sx={{ whiteSpace: 'nowrap', height: '44px', display: 'flex', alignItems: 'center' }}
-            disabled={isLoading}
+            disabled={isLoading || isSubmitting}
           >
-            {isLoading ? <CircularProgress size={20} sx={{ color: 'inherit', mr: 1 }} /> : discountId ? 'Edit' : 'Add'}
+            {isLoading || isSubmitting ? (
+              <CircularProgress size={20} sx={{ color: 'inherit', mr: 1 }} />
+            ) : discountId ? (
+              'Edit'
+            ) : (
+              'Add'
+            )}
           </Button>
         </Stack>
       </Box>
@@ -184,7 +249,7 @@ export default function DiscountDetailContent() {
                   render={({ field }) => (
                     <DatePicker
                       {...field}
-                      value={field.value ? dayjs(field.value) : null}
+                      value={field.value ? dayjs(field.value as string | number | Date) : null}
                       onChange={(date: any) => field.onChange(date ? date.format('YYYY-MM-DD') : null)}
                       label='Start Time'
                       sx={{ width: '50%' }}
@@ -198,7 +263,7 @@ export default function DiscountDetailContent() {
                   render={({ field }) => (
                     <DatePicker
                       {...field}
-                      value={field.value ? dayjs(field.value) : null}
+                      value={field.value ? dayjs(field.value as string | number | Date) : null}
                       onChange={(date: any) => field.onChange(date ? date.format('YYYY-MM-DD') : null)}
                       label='End Time'
                       sx={{ width: '50%' }}

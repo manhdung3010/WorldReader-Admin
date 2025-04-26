@@ -2,7 +2,7 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/router'
-import { Controller, useForm, useFieldArray } from 'react-hook-form'
+import { Controller, useForm, useFieldArray, useWatch } from 'react-hook-form'
 import {
   Box,
   Button,
@@ -151,10 +151,26 @@ export default function PostDetailContent() {
     handleMutate(data)
   }
 
+  const name = useWatch({ control, name: 'name' })
+
+  useEffect(() => {
+    if (name) {
+      const generatedCode = name
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '') // xóa dấu
+        .toLowerCase()
+        .replace(/[^a-z0-9-]/g, '-') // thay ký tự đặc biệt bằng "-"
+        .replace(/-+/g, '-') // gộp nhiều dấu "-" thành 1
+        .replace(/^-|-$/g, '')
+
+      setValue('url', generatedCode)
+    }
+  }, [name, setValue])
+
   return (
     <div>
       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Typography variant='h5'>{getValues('name') || 'Add Post'}</Typography>
+        <Typography variant='h5'>{postDetail?.data?.name || 'Add Post'}</Typography>
         <Stack direction='row' justifyContent='end' gap={5}>
           <Button onClick={() => router.back()} variant='outlined' color='inherit' sx={{ height: '44px' }}>
             Hủy

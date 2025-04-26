@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/router'
-import { Controller, useForm } from 'react-hook-form'
+import { Controller, useForm, useWatch } from 'react-hook-form'
 import {
   Box,
   Button,
@@ -105,6 +105,22 @@ export default function CategoryPostDetailContent() {
   const onSubmit = (data: any) => {
     handleMutate(data)
   }
+
+  const name = useWatch({ control, name: 'name' })
+
+  useEffect(() => {
+    if (name) {
+      const generatedCode = name
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '') // xóa dấu
+        .toLowerCase()
+        .replace(/[^a-z0-9-]/g, '-') // thay ký tự đặc biệt bằng "-"
+        .replace(/-+/g, '-') // gộp nhiều dấu "-" thành 1
+        .replace(/^-|-$/g, '')
+
+      setValue('url', generatedCode)
+    }
+  }, [name, setValue])
 
   return (
     <div>

@@ -30,11 +30,41 @@ export const schemaCreateDiscount = yup.object().shape({
 
   categoryDiscount: yup.array().of(yup.string()),
 
-  startTime: yup.date().required('Start time is required').typeError('Invalid start time format'),
+  startTime: yup
+    .mixed()
+    .required('Start time is required')
+    .test('is-date', 'Invalid start time format', value => {
+      if (!value) {
+        return false
+      }
+
+      const date = new Date(value as string | number | Date)
+
+      return !isNaN(date.getTime())
+    }),
 
   endTime: yup
-    .date()
+    .mixed()
     .required('End time is required')
-    .typeError('Invalid end time format')
-    .min(yup.ref('startTime'), 'End time must be after start time')
+    .test('is-date', 'Invalid end time format', value => {
+      if (!value) {
+        return false
+      }
+
+      const date = new Date(value as string | number | Date)
+
+      return !isNaN(date.getTime())
+    })
+    .test('is-after-start', 'End time must be after start time', function (value) {
+      const { startTime } = this.parent
+
+      if (!startTime || !value) {
+        return true
+      }
+
+      const endDate = new Date(value as string | number | Date)
+      const startDate = new Date(startTime as string | number | Date)
+
+      return endDate > startDate
+    })
 })
