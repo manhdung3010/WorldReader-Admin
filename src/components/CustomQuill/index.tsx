@@ -73,7 +73,7 @@ const CustomQuill: React.FC<CustomQuillProps> = ({ value, onChange, placeholder,
     return () => {
       isMounted = false
     }
-  }, [onChange])
+  }, [onChange, placeholder, value])
 
   // Đồng bộ giá trị từ Controller
   useEffect(() => {

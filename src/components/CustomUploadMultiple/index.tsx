@@ -11,16 +11,7 @@ import { IconButton, Tooltip } from '@mui/material'
 import { useDropzone } from 'react-dropzone'
 import { Close, ExportVariant } from 'mdi-material-ui'
 import toast from 'react-hot-toast'
-import { useMutation } from '@tanstack/react-query'
-import { deleteFile, uploadFiles } from 'src/api/upload.service'
-
-// Type Definitions
-interface FileProp {
-  name: string
-  type: string
-  size: number
-  file_name?: string
-}
+import { uploadFiles } from 'src/api/upload.service'
 
 interface Props {
   value?: any
