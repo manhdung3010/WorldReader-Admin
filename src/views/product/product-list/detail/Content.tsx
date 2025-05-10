@@ -153,6 +153,7 @@ export default function ProductDetailContent() {
         await queryClient.invalidateQueries(['PRODUCTS'])
         toast.success(response.message || 'Success!')
         setIsLoading(false)
+        router.back()
       },
       onError: (error: Error) => {
         toast.error(error.message || 'Failed!')

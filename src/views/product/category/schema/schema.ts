@@ -11,9 +11,9 @@ export const schemaCreateCategory = yup.object().shape({
 
   homeDisplay: yup.boolean().required('Home display field is required'),
 
-  image: yup.array().of(yup.string()).nullable(),
+  image: yup.string().nullable(),
 
-  parentIds: yup.array().default([]),
+  parentIds: yup.array().notRequired().default([]),
 
   seo: yup.object().shape({
     title: yup.string().notRequired().max(255, 'SEO title must not exceed 255 characters'),
