@@ -104,6 +104,7 @@ export default function ProductDetailContent() {
       description: '',
       url: '',
       display: true,
+      chosenByExperts: false,
       status: 'IN_STOCK',
       avatar: '',
       price: 0,
@@ -495,6 +496,13 @@ export default function ProductDetailContent() {
                 control={control}
                 render={({ field }) => (
                   <FormControlLabel control={<Switch {...field} checked={field.value} />} label='Display' />
+                )}
+              />
+              <Controller
+                name='chosenByExperts'
+                control={control}
+                render={({ field }) => (
+                  <FormControlLabel control={<Switch {...field} checked={field.value} />} label='Chosen by Experts' />
                 )}
               />
             </Stack>

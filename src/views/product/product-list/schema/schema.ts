@@ -6,6 +6,7 @@ export const schemaCreateProduct = yup.object().shape({
   description: yup.string(),
   url: yup.string(),
   display: yup.boolean(),
+  chosenByExperts: yup.boolean(),
   status: yup.string().oneOf(['IN_STOCK', 'OUT_OF_STOCK', 'DISCONTINUED'], 'Trạng thái không hợp lệ'),
   avatar: yup.string(),
   price: yup.number().min(0, 'Giá phải lớn hơn hoặc bằng 0'),
