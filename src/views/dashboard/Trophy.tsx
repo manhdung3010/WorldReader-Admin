@@ -4,6 +4,8 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
 import { styled, useTheme } from '@mui/material/styles'
+import { useQuery } from '@tanstack/react-query'
+import { getSales } from 'src/api/report.service'
 
 // Styled component for the triangle shaped background image
 const TriangleImg = styled('img')({
@@ -26,6 +28,8 @@ const Trophy = () => {
   const theme = useTheme()
 
   const imageSrc = theme.palette.mode === 'light' ? 'triangle-light.png' : 'triangle-dark.png'
+
+  const { data: sales, isLoading, isError } = useQuery<any>(['SALES'], () => getSales({}), { refetchOnWindowFocus: false })
 
   return (
     <Card sx={{ position: 'relative' }}>

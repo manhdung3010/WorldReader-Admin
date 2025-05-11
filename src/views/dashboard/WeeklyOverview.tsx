@@ -1,25 +1,53 @@
 // ** MUI Imports
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
-import Button from '@mui/material/Button'
 import { useTheme } from '@mui/material/styles'
 import CardHeader from '@mui/material/CardHeader'
-import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
 
 // ** Icons Imports
-import DotsVertical from 'mdi-material-ui/DotsVertical'
 
 // ** Third Party Imports
 import { ApexOptions } from 'apexcharts'
 
 // ** Custom Components Imports
 import ReactApexcharts from 'src/@core/components/react-apexcharts'
+import type { DailySalesReport } from 'src/types/report'
 
-const WeeklyOverview = () => {
+interface WeeklyOverviewProps {
+  dailySales: DailySalesReport
+}
+
+const WeeklyOverview = ({ dailySales }: WeeklyOverviewProps) => {
   // ** Hook
   const theme = useTheme()
+
+  // Calculate growth percentage
+  const calculateGrowth = () => {
+    if (dailySales.dailyData.length < 2) return 0
+
+    const currentPeriodTotal = dailySales.dailyData.reduce((sum, day) => sum + day.sales, 0)
+    const previousPeriodTotal = dailySales.dailyData.reduce((sum, day) => sum + day.orderCount, 0)
+
+    if (previousPeriodTotal === 0) return 0
+
+    return ((currentPeriodTotal - previousPeriodTotal) / previousPeriodTotal) * 100
+  }
+
+  const growth = calculateGrowth()
+
+  // Format date range
+  const formatDateRange = () => {
+    if (dailySales.dailyData.length === 0) {
+      return ''
+    }
+
+    const startDate = new Date(dailySales.dailyData[0].date)
+    const endDate = new Date(dailySales.dailyData[dailySales.dailyData.length - 1].date)
+
+    return `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`
+  }
 
   const options: ApexOptions = {
     chart: {
@@ -67,9 +95,13 @@ const WeeklyOverview = () => {
       }
     },
     xaxis: {
-      categories: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+      categories: dailySales.dailyData.map(day => {
+        const date = new Date(day.date)
+
+        return date.toLocaleDateString('en-US', { weekday: 'short' })
+      }),
       tickPlacement: 'on',
-      labels: { show: false },
+      labels: { show: true },
       axisTicks: { show: false },
       axisBorder: { show: false }
     },
@@ -78,35 +110,63 @@ const WeeklyOverview = () => {
       tickAmount: 4,
       labels: {
         offsetX: -17,
-        formatter: value => `${value > 999 ? `${(value / 1000).toFixed(0)}` : value}k`
+        formatter: value => `${value > 999 ? `${(value / 1000).toFixed(0)}` : value.toFixed(2)}`
       }
     }
   }
 
   return (
-    <Card>
+    <Card style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <CardHeader
         title='Weekly Overview'
+        subheader={formatDateRange()}
         titleTypographyProps={{
           sx: { lineHeight: '2rem !important', letterSpacing: '0.15px !important' }
         }}
-        action={
-          <IconButton size='small' aria-label='settings' className='card-more-options' sx={{ color: 'text.secondary' }}>
-            <DotsVertical />
-          </IconButton>
-        }
       />
-      <CardContent sx={{ '& .apexcharts-xcrosshairs.apexcharts-active': { opacity: 0 } }}>
-        <ReactApexcharts type='bar' height={205} options={options} series={[{ data: [37, 57, 45, 75, 57, 40, 65] }]} />
+      <CardContent
+        sx={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          '& .apexcharts-xcrosshairs.apexcharts-active': { opacity: 0 }
+        }}
+      >
+        <ReactApexcharts
+          type='bar'
+          height={230}
+          options={options}
+          series={[
+            {
+              data: dailySales.dailyData.map(day => day.sales)
+            }
+          ]}
+        />
         <Box sx={{ mb: 7, display: 'flex', alignItems: 'center' }}>
-          <Typography variant='h5' sx={{ mr: 4 }}>
-            45%
+          <Typography variant='h5' sx={{ mr: 4, color: growth >= 0 ? 'success.main' : 'error.main' }}>
+            {growth.toFixed(2)}%
           </Typography>
-          <Typography variant='body2'>Your sales performance is 45% 😎 better compared to last month</Typography>
+          <Typography variant='body2'>
+            {growth >= 0 ? (
+              <>
+                Sales increased by {Math.abs(growth).toFixed(2)}% compared to previous period
+                <br />
+                <Typography component='span' variant='caption' sx={{ color: 'text.secondary' }}>
+                  Total sales: ${dailySales.dailyData.reduce((sum, day) => sum + day.sales, 0).toFixed(2)}
+                </Typography>
+              </>
+            ) : (
+              <>
+                Sales decreased by {Math.abs(growth).toFixed(1)}% compared to previous period
+                <br />
+                <Typography component='span' variant='caption' sx={{ color: 'text.secondary' }}>
+                  Total sales: ${dailySales.dailyData.reduce((sum, day) => sum + day.sales, 0).toFixed(2)}
+                </Typography>
+              </>
+            )}
+          </Typography>
         </Box>
-        <Button fullWidth variant='contained'>
-          Details
-        </Button>
       </CardContent>
     </Card>
   )
