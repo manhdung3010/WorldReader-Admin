@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
+  Autocomplete,
   Box,
   Button,
   FormControl,
@@ -12,22 +13,31 @@ import {
   TextField,
   Typography
 } from '@mui/material'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import _ from 'lodash'
 import { FiltersProps } from 'src/views/author/Types'
+import { getCategory } from 'src/api/category.service'
+import { useQuery } from '@tanstack/react-query'
 
 const Filters: React.FC<FiltersProps> = ({ formFilter, setFormFilter }) => {
   const [formSearch, setFormSearch] = useState({
     name: '',
     code: '',
     priceMin: '',
+    categories: [] as string[],
     priceMax: '',
     status: ''
   })
 
+  const [optionCategories, setOptionCategories] = useState<any[]>([])
+
   const debouncedSetFormFilter = useCallback(
-    _.debounce((name: string, value: string) => {
-      setFormFilter((prev: any) => ({ ...prev, [name]: value }))
+    _.debounce((name: string, value: string | string[]) => {
+      if (name === 'categories') {
+        setFormFilter((prev: any) => ({ ...prev, [name]: value }))
+      } else {
+        setFormFilter((prev: any) => ({ ...prev, [name]: value }))
+      }
     }, 1000),
     [setFormFilter]
   )
@@ -43,6 +53,21 @@ const Filters: React.FC<FiltersProps> = ({ formFilter, setFormFilter }) => {
     setFormFilter((prev: any) => ({ ...prev, [name]: value }))
   }
 
+  const { data: categories } = useQuery({
+    queryKey: ['CATEGORIES'],
+    queryFn: () =>
+      getCategory({
+        name: '',
+        url: '',
+        display: null,
+        homeDisplay: null,
+        page: 1,
+        pageSize: 999
+      }),
+    keepPreviousData: true,
+    retry: 1
+  })
+
   const handleResetFilters = () => {
     const resetValues = {
       name: '',
@@ -50,6 +75,7 @@ const Filters: React.FC<FiltersProps> = ({ formFilter, setFormFilter }) => {
       priceMin: '',
       priceMax: '',
       status: '',
+      categories: [],
       isDiscount: null,
       display: null,
       page: 1,
@@ -58,6 +84,12 @@ const Filters: React.FC<FiltersProps> = ({ formFilter, setFormFilter }) => {
     setFormFilter(resetValues)
     setFormSearch(resetValues)
   }
+
+  useEffect(() => {
+    if (categories?.data) {
+      setOptionCategories(categories.data)
+    }
+  }, [categories])
 
   return (
     <Box p={3}>
@@ -69,7 +101,7 @@ const Filters: React.FC<FiltersProps> = ({ formFilter, setFormFilter }) => {
       </Stack>
 
       <Grid container spacing={3} mt={1}>
-        <Grid item xs={6}>
+        <Grid item xs={4}>
           <TextField
             fullWidth
             label='Search Name'
@@ -78,13 +110,28 @@ const Filters: React.FC<FiltersProps> = ({ formFilter, setFormFilter }) => {
             onChange={handleTextFieldChange}
           />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={4}>
           <TextField
             fullWidth
             label='Search Code'
             name='code'
             value={formSearch.code}
             onChange={handleTextFieldChange}
+          />
+        </Grid>
+
+        <Grid item xs={4}>
+          <Autocomplete
+            multiple
+            options={optionCategories}
+            getOptionLabel={(option: any) => option.name}
+            value={optionCategories.filter((opt: any) => formSearch.categories.includes(opt.id)) || []}
+            onChange={(event, newValue) => {
+              const categoryIds = newValue.map((item: any) => item.id)
+              setFormSearch(prev => ({ ...prev, categories: categoryIds }))
+              debouncedSetFormFilter('categories', categoryIds)
+            }}
+            renderInput={params => <TextField {...params} label='Category' />}
           />
         </Grid>
 

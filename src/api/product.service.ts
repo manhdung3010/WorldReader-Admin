@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import axiosClient from '.'
 
 export function getProduct(params: {
@@ -12,7 +13,13 @@ export function getProduct(params: {
   pageSize: number
 }) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const filteredParams = Object.fromEntries(Object.entries(params).filter(([_, value]) => value !== ''))
+  const filteredParams = Object.fromEntries(
+    Object.entries(params).filter(([_, value]) => {
+      if (typeof value === 'string') return value !== ''
+      
+      return value !== null && value !== undefined
+    })
+  )
 
   return axiosClient.get('admin/products', { params: filteredParams })
 }

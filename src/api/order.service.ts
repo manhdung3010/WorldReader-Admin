@@ -22,3 +22,11 @@ export function getDetailOrder(id: any) {
 export function deleteOrder(id: number) {
   return axiosClient.delete(`admin/orders/${id}`)
 }
+
+export function updateOrderStatus(id: number, status: string) {
+  return axiosClient.put(`admin/orders/${id}/status`, { status })
+}
+
+export function updateOrderPaymentStatus(id: number, payStatus: string) {
+  return axiosClient.put(`admin/orders/${id}/payment-status`, { payStatus })
+}

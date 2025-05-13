@@ -18,10 +18,11 @@ const ProductContent = () => {
     priceMin: '',
     priceMax: '',
     status: '',
+    categories: '',
     isDiscount: null,
     display: null,
     page: 1,
-    pageSize: 100
+    pageSize: 20
   })
 
   const {
@@ -36,6 +37,7 @@ const ProductContent = () => {
       formFilter.priceMin,
       formFilter.priceMax,
       formFilter.status,
+      formFilter.categories,
       formFilter.isDiscount,
       formFilter.display,
       formFilter.page,
