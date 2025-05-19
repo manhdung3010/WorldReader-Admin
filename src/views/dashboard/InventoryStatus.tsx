@@ -16,10 +16,12 @@ import {
   Select,
   MenuItem,
   FormControl,
-  InputLabel
+  InputLabel,
+  Pagination
 } from '@mui/material'
 import { getInventoryStatus } from 'src/api/report.service'
 import { formatCurrency } from 'src/utils/format'
+import { useQuery } from '@tanstack/react-query'
 
 const statusColors: any = {
   OUT_OF_STOCK: 'error',
@@ -29,25 +31,25 @@ const statusColors: any = {
 }
 
 export default function InventoryStatus() {
-  const [inventoryData, setInventoryData] = useState<any>(null)
   const [status, setStatus] = useState<any>('')
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    const fetchInventory = async () => {
-      try {
-        setLoading(true)
-        const response = await getInventoryStatus({ status: status || undefined })
-        setInventoryData(response.data)
-      } catch (error) {
-        console.error('Error fetching inventory status:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
+  const [page, setPage] = useState(1)
+  const limit = 5 // Items per page
 
-    fetchInventory()
+  const {
+    data: inventoryData,
+    isLoading,
+    isError
+  } = useQuery<any>(['inventoryStatus', status, page, limit], () => getInventoryStatus({ status, page, limit }), {
+    keepPreviousData: true,
+    refetchOnWindowFocus: false
+  })
+
+  // Reset to page 1 when filter changes
+  useEffect(() => {
+    setPage(1)
   }, [status])
 
   if (!inventoryData) {
@@ -75,14 +77,14 @@ export default function InventoryStatus() {
           <Grid item xs={3}>
             <Box sx={{ textAlign: 'center' }}>
               <Typography color='textSecondary'>Total Products</Typography>
-              <Typography variant='h6'>{inventoryData.summary.totalProducts}</Typography>
+              <Typography variant='h6'>{inventoryData?.data.summary.totalProducts}</Typography>
             </Box>
           </Grid>
           <Grid item xs={3}>
             <Box sx={{ textAlign: 'center' }}>
               <Typography color='textSecondary'>Out of Stock</Typography>
               <Typography variant='h6' color='error'>
-                {inventoryData.summary.outOfStock}
+                {inventoryData?.data.summary.outOfStock}
               </Typography>
             </Box>
           </Grid>
@@ -90,7 +92,7 @@ export default function InventoryStatus() {
             <Box sx={{ textAlign: 'center' }}>
               <Typography color='textSecondary'>Low Stock</Typography>
               <Typography variant='h6' color='warning.main'>
-                {inventoryData.summary.lowStock}
+                {inventoryData?.data.summary.lowStock}
               </Typography>
             </Box>
           </Grid>
@@ -98,7 +100,7 @@ export default function InventoryStatus() {
             <Box sx={{ textAlign: 'center' }}>
               <Typography color='textSecondary'>In Stock</Typography>
               <Typography variant='h6' color='success.main'>
-                {inventoryData.summary.mediumStock + inventoryData.summary.highStock}
+                {inventoryData?.data.summary.mediumStock + inventoryData?.data.summary.highStock}
               </Typography>
             </Box>
           </Grid>
@@ -117,7 +119,7 @@ export default function InventoryStatus() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {inventoryData.data.map((item: any) => (
+              {inventoryData?.data.data.map((item: any) => (
                 <TableRow key={item.productId}>
                   <TableCell>{item.productName}</TableCell>
                   <TableCell align='right'>{item.currentQuantity}</TableCell>
@@ -134,6 +136,17 @@ export default function InventoryStatus() {
             </TableBody>
           </Table>
         </TableContainer>
+
+        <Box sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
+          <Pagination
+            count={Math.ceil(inventoryData?.data.total / limit)}
+            page={page}
+            onChange={(_, value) => setPage(value)}
+            color='primary'
+            shape='rounded'
+            size='medium'
+          />
+        </Box>
       </CardContent>
     </Card>
   )

@@ -79,12 +79,12 @@ const WeeklyOverview = ({ dailySales }: WeeklyOverviewProps) => {
     },
     dataLabels: { enabled: false },
     colors: [
-      theme.palette.background.default,
-      theme.palette.background.default,
-      theme.palette.background.default,
+      theme.palette.primary.tonal,
+      theme.palette.primary.tonal,
+      theme.palette.primary.tonal,
       theme.palette.primary.main,
-      theme.palette.background.default,
-      theme.palette.background.default
+      theme.palette.primary.tonal,
+      theme.palette.primary.tonal
     ],
     states: {
       hover: {

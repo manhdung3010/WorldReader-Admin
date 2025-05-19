@@ -28,7 +28,7 @@ export function getLowStockProducts(params: ReportParams) {
   return axiosClient.get('admin/reports/low-stock', { params: filteredParams })
 }
 
-export function getInventoryStatus(params: ReportParams) {
+export function getInventoryStatus(params: any) {
   const filteredParams = Object.fromEntries(Object.entries(params).filter(([, value]) => value !== ''))
 
   return axiosClient.get('admin/reports/inventory/status', { params: filteredParams })

@@ -121,6 +121,10 @@ const navigation = (): VerticalNavItemsType => {
         {
           title: 'Menu',
           path: '/config/menu'
+        },
+        {
+          title: 'File ChatBot',
+          path: '/config/file-chatbot'
         }
       ]
     }
