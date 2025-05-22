@@ -16,7 +16,7 @@ import {
 } from '@mui/material'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getChatbotFiles, uploadChatbotFile, deleteChatbotFile, deleteAllChatbotFiles } from 'src/api/chatbot.service'
-import { Delete, DeleteSweep, CloudUpload, Pencil } from 'mdi-material-ui'
+import { Delete, DeleteSweep, CloudUpload } from 'mdi-material-ui'
 import { toast } from 'react-hot-toast'
 
 // Define allowed file types
