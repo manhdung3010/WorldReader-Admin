@@ -223,7 +223,7 @@ const OrderDetail = () => {
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Typography variant='h6'>Total</Typography>
                     <Typography variant='h6' color='primary'>
-                      {formatCurrency(order.totalPrice)}
+                      {formatCurrency(order.totalPrice - order.discountPrice)}
                     </Typography>
                   </Box>
                 </Stack>
