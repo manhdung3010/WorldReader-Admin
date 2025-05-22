@@ -94,7 +94,7 @@ const CustomUploadSingle = ({
         flexWrap: 'wrap',
         justifyContent: 'center',
         alignItems: 'center',
-        minHeight: 150,
+        minHeight: 200,
         bgcolor: 'background.default',
         '&:hover': { borderColor: 'primary.main' }
       }}

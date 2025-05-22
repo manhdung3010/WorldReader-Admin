@@ -31,6 +31,7 @@ import dayjs from 'dayjs'
 import { getKeywordProduct } from 'src/api/keyword-product.service'
 import CustomQuill from 'src/components/CustomQuill'
 import { Delete } from 'mdi-material-ui'
+import { getAuthor } from 'src/api/author.service'
 
 export default function ProductDetailContent() {
   const [optionCategories, setOptionCategories] = useState([])
@@ -63,6 +64,19 @@ export default function ProductDetailContent() {
     retry: 1
   })
 
+  const { data: authors } = useQuery({
+    queryKey: ['AUTHORS'],
+    queryFn: () =>
+      getAuthor({
+        name: '',
+        nationality: '',
+        page: 1,
+        pageSize: 9999
+      }),
+    keepPreviousData: true,
+    retry: 1
+  })
+
   const { data: keywords } = useQuery({
     queryKey: ['KEYWORDS_PRODUCT'],
     queryFn: () =>
@@ -73,7 +87,8 @@ export default function ProductDetailContent() {
         pageSize: 9999
       }),
     keepPreviousData: true,
-    retry: 1
+    retry: 1,
+    enabled: true
   })
 
   useEffect(() => {
@@ -110,7 +125,7 @@ export default function ProductDetailContent() {
       price: 0,
       perDiscount: 0,
       image: [],
-      information: [],
+      information: [{ name: 'author', content: '' }],
       categories: [],
       productWarehouse: { quantityInStock: 0, quantityInUse: 0 },
       flashSale: { flashSaleStartTime: null, flashSaleEndTime: null, flashSaleDiscount: 0 },
@@ -361,23 +376,51 @@ export default function ProductDetailContent() {
                       sx={{ flex: 1 }}
                       error={!!fieldState.error}
                       helperText={fieldState.error?.message}
+                      disabled={fieldProps.value === 'author'}
                     />
                   )}
                 />
                 <Controller
                   name={`information.${index}.content`}
                   control={control}
-                  render={({ field: fieldProps, fieldState }) => (
-                    <TextField
-                      {...fieldProps}
-                      label='Content'
-                      sx={{ flex: 1 }}
-                      error={!!fieldState.error}
-                      helperText={fieldState.error?.message}
-                    />
-                  )}
+                  render={({ field: fieldProps, fieldState }) =>
+                    fieldProps.name === 'information.0.content' ? (
+                      <Autocomplete
+                        options={authors?.data || []}
+                        sx={{ width: '40%' }}
+                        getOptionLabel={(option: any) => option.name}
+                        value={authors?.data?.find((author: any) => author.id === Number(fieldProps.value)) || null}
+                        onChange={(_, newValue) => fieldProps.onChange(newValue?.id || '')}
+                        renderInput={params => (
+                          <TextField
+                            {...params}
+                            label='Author'
+                            sx={{ width: '100%' }}
+                            error={!!fieldState.error}
+                            helperText={fieldState.error?.message}
+                          />
+                        )}
+                      />
+                    ) : (
+                      <TextField
+                        {...fieldProps}
+                        label='Content'
+                        sx={{ width: '40%' }}
+                        error={!!fieldState.error}
+                        helperText={fieldState.error?.message}
+                      />
+                    )
+                  }
                 />
-                <Button onClick={() => remove(index)} color='error'>
+
+                <Button
+                  disabled={field.name === 'author'}
+                  onClick={() => remove(index)}
+                  color='error'
+                  sx={{
+                    opacity: field.name !== 'author' ? 1 : 0
+                  }}
+                >
                   <Delete />
                 </Button>
               </Stack>

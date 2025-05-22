@@ -13,7 +13,6 @@ import toast from 'react-hot-toast'
 import { useEffect, useState } from 'react'
 import CustomUploadSinge from 'src/components/CustomUploadSingle'
 import { createAuthor, getDetailAuthor, updateAuthor } from 'src/api/author.service'
-import dynamic from 'next/dynamic'
 import CustomQuill from 'src/components/CustomQuill'
 
 const DrawerForm: React.FC<any> = ({ openDrawerForm, setOpenDrawerForm, mode, detailData }) => {
@@ -116,6 +115,7 @@ const DrawerForm: React.FC<any> = ({ openDrawerForm, setOpenDrawerForm, mode, de
 
           <CustomUploadSinge
             value={getValues('image')}
+
             onChange={value => {
               setValue('image', value)
             }}

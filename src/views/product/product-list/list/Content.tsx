@@ -22,7 +22,7 @@ const ProductContent = () => {
     isDiscount: null,
     display: null,
     page: 1,
-    pageSize: 20
+    pageSize: 10
   })
 
   const {
