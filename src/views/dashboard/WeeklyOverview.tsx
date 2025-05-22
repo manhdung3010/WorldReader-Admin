@@ -78,14 +78,7 @@ const WeeklyOverview = ({ dailySales }: WeeklyOverviewProps) => {
       }
     },
     dataLabels: { enabled: false },
-    colors: [
-      theme.palette.primary.tonal,
-      theme.palette.primary.tonal,
-      theme.palette.primary.tonal,
-      theme.palette.primary.main,
-      theme.palette.primary.tonal,
-      theme.palette.primary.tonal
-    ],
+    colors: ['#EDE4FF', '#EDE4FF', '#EDE4FF', '#EDE4FF', theme.palette.primary.main, '#EDE4FF', '#EDE4FF'],
     states: {
       hover: {
         filter: { type: 'none' }
